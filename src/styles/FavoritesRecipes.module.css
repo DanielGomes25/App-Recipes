@@ -1,5 +1,5 @@
 .favorite-recipe-img {
-  border-radius: 8px 8px 0 0;
+  border-radius: var(--radius-m) var(--radius-m) 0 0;
   height: 30vh;
   object-fit: cover;
   width: 40%;

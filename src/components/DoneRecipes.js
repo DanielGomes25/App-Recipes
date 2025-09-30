@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import shareIcon from '../images/shareIcon.svg';
-import '../DoneRecipes.css';
+import styles from '../DoneRecipes.module.css';
 
 function DoneRecipes() {
   const [recipesDone, setRecipesDone] = useState([]);
@@ -54,7 +54,7 @@ function DoneRecipes() {
             <div key={ recipe.id }>
               <Link to={ `/drinks/${recipe.id}` }>
                 <img
-                  className="image-recipe"
+                  className={ styles['image-recipe'] }
                   data-testid={ `${index}-horizontal-image` }
                   src={ recipe.image }
                   alt="Imagem da Receita"
@@ -100,7 +100,7 @@ function DoneRecipes() {
           <div key={ recipe.id }>
             <Link to={ `/meals/${recipe.id}` }>
               <img
-                className="image-recipe"
+                className={ styles['image-recipe'] }
                 data-testid={ `${index}-horizontal-image` }
                 src={ recipe.image }
                 alt="Imagem da Receita"

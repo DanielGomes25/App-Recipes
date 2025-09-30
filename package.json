@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "engines": {
-    "node": "16 || 18"
+    "node": ">=14.0.0"
   },
   "dependencies": {
     "bootstrap": "^5.2.3",

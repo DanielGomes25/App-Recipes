@@ -1,10 +1,10 @@
 .meals {
   align-items: center;
-  background: #0fa36b;
-  color: #464646;
+  background: var(--color-brand);
+  color: var(--color-text);
   display: flex;
   flex-direction: column;
-  font-family: sans-serif;
+  font-family: var(--font-family-base);
   height: 100vh;
   justify-content: center;
   width: 100%;
@@ -32,7 +32,7 @@
 .meals > .logo {
   animation: shake 1.5s infinite ease;
   color: aliceblue;
-  font-family: Montserrat , sans-serif;
+  font-family: var(--font-family-brand);
   font-size: 3em;
   font-weight: 900;
 }
@@ -71,37 +71,3 @@ footer {
   bottom: 0;
   position: fixed;
 }
-
-.buttonStart {
-  bottom: 0;
-  position: fixed;
-  left: 50%;
-  right: 50%;
-  width: 80px;
-}
-
-.carousel {
-  display: flex;
-  gap: 10px;
-  height: 30vh;
-  overflow-x: scroll;
-  overflow-y: hidden;
-  white-space: nowrap;
-  width: 25%;
-}
-
-.displayCard {
-  height: 100%;
-  width: 50%;
-}
-
-.recommendationImage {
-  height: 50%;
-}
-
-.recipePhoto {
-  height: 30%;
-  width: 30%;
-}
-
-

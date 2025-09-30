@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import styles from './RecipeDetails.module.css';
 import { useHistory, useLocation } from 'react-router-dom';
 import copy from 'clipboard-copy';
 import { FetchIdDrink, FetchIdMeals, allMeals, allDrinks }
@@ -94,7 +95,7 @@ function RecipeDetails() {
               src={ element[1] }
               alt="Imagem da receita"
               data-testid="recipe-photo"
-              className="recipePhoto"
+              className={ styles.recipePhoto }
             />);
           case 'strCategory':
             return <h3 data-testid="recipe-category">{element[1]}</h3>;
@@ -128,7 +129,7 @@ function RecipeDetails() {
               src={ element[1] }
               alt="Imagem da receita"
               data-testid="recipe-photo"
-              className="recipePhoto"
+              className={ styles.recipePhoto }
             />);
           case 'strCategory':
             return <h3 data-testid="recipe-category">{element[1]}</h3>;
@@ -172,13 +173,13 @@ function RecipeDetails() {
         ))}
         ;
       </div>
-      <div className="carousel">
+      <div className={ styles.carousel }>
         {
 
           recommendationMeals.slice(0, magicNumberSix).map((recommendation, index) => (
 
             <div
-              className="displayCard"
+              className={ styles.displayCard }
               data-testid={ `${index}-recommendation-card` }
               key={ recommendation.idMeals }
             >
@@ -189,20 +190,20 @@ function RecipeDetails() {
               <img
                 src={ recommendation.strMealThumb }
                 alt={ recommendation.strArea }
-                className="recommendationImage"
+                className={ styles.recommendationImage }
               />
             </div>
 
           ))
         }
       </div>
-      <div className="carousel">
+      <div className={ styles.carousel }>
         {
           recommendationDrinks.slice(0, magicNumberSix).map((recommendation, index) => (
 
             <div
               key={ recommendation.idDrink }
-              className="displayCard"
+              className={ styles.displayCard }
               data-testid={ `${index}-recommendation-card` }
             >
 
@@ -213,7 +214,7 @@ function RecipeDetails() {
               <img
                 src={ recommendation.strDrinkThumb }
                 alt={ recommendation.strArea }
-                className="recommendationImage"
+                className={ styles.recommendationImage }
               />
 
             </div>
@@ -224,7 +225,7 @@ function RecipeDetails() {
 
       <button
         data-testid="start-recipe-btn"
-        className="buttonStart"
+        className={ styles.buttonStart }
         onClick={ handleRedirect }
       >
 

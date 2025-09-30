@@ -4,7 +4,7 @@ import Header from '../components/Header';
 import Context from '../context/Context';
 import shareIcon from '../images/shareIcon.svg';
 import blackHeartIcon from '../images/blackHeartIcon.svg';
-import '../styles/FavoritesRecipes.css';
+import styles from '../styles/FavoritesRecipes.module.css';
 
 function FavoriteRecipes() {
   const { setTitleHeader, setLoadingSearch } = useContext(Context);
@@ -125,7 +125,7 @@ function FavoriteRecipes() {
                     data-testid={ `${index}-horizontal-image` }
                     src={ recipe.image }
                     alt={ recipe.name }
-                    className="favorite-recipe-img"
+                    className={ styles['favorite-recipe-img'] }
                   />
                 </Link>
                 <button

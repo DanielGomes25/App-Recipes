@@ -1,0 +1,32 @@
+.carousel {
+  display: flex;
+  gap: 10px;
+  height: 30vh;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+  width: 25%;
+}
+
+.displayCard {
+  height: 100%;
+  width: 50%;
+}
+
+.recommendationImage {
+  height: 50%;
+}
+
+.recipePhoto {
+  height: 30%;
+  width: 30%;
+}
+
+.buttonStart {
+  bottom: 0;
+  position: fixed;
+  left: 50%;
+  right: 50%;
+  width: var(--size-button-w);
+}
+
