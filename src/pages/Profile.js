@@ -34,7 +34,7 @@ function Profile() {
   };
 
   return (
-    <div>
+    <div className="meals">
       <Header />
       <p
         data-testid="profile-email"

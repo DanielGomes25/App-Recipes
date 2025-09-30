@@ -13,7 +13,7 @@ function Drinks() {
   }, [setTitleHeader, setLoadingSearch]);
 
   return (
-    <div>
+    <div className="meals">
       <Header />
       <Recipes />
       <Footer />

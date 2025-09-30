@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import './styles/tokens.css';
 import './index.css';
 import { BrowserRouter } from 'react-router-dom';
 import Provider from './context/Provider';

@@ -1,12 +1,8 @@
 .meals {
-  align-items: center;
   background: var(--color-brand);
   color: var(--color-text);
-  display: flex;
-  flex-direction: column;
   font-family: var(--font-family-base);
-  height: 100vh;
-  justify-content: center;
+  min-height: 100vh;
   width: 100%;
 }
 

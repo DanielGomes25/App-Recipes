@@ -35,7 +35,7 @@ function Login() {
     mealsRoute();
   };
   return (
-    <div>
+    <div className="meals">
       <form>
         <input
           type="email"

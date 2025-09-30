@@ -204,7 +204,7 @@ function RecipeInProgress(props) {
       </>
     );
   }
-  return <div>{renderPage()}</div>;
+  return <div className="meals">{renderPage()}</div>;
 }
 RecipeInProgress.propTypes = {
   match: PropTypes.shape({

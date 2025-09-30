@@ -80,7 +80,7 @@ function FavoriteRecipes() {
 
   console.log(favoriteRecipes);
   return (
-    <div>
+    <div className="meals">
       <Header />
       <form>
         <fieldset>

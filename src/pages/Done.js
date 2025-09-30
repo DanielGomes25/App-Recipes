@@ -12,7 +12,7 @@ function Done() {
   }, [setTitleHeader, setLoadingSearch]);
 
   return (
-    <div>
+    <div className="meals">
       <Header />
       <DoneRecipes />
     </div>

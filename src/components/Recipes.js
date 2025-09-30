@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
+import styles from './Recipes.module.css';
 import {
   allMeals,
   allDrinks,
@@ -96,10 +97,10 @@ export default function Recipes() {
   ]);
 
   return (
-    <div>
+    <div className={ styles.wrapper }>
       <h1>Recipes</h1>
 
-      <div>
+      <div className={ styles.categories }>
         {
           category
             .map((e) => (
@@ -124,15 +125,17 @@ export default function Recipes() {
 
       {history.location.pathname === '/meals'
         ? (
-          <div>
+          <div className={ styles.grid }>
             {
               recipesData
                 .map((e, index) => (
                   <div
+                    className={ styles.card }
                     key={ e.idMeal }
                     data-testid={ `${index}-recipe-card` }
                   >
                     <h2
+                      className={ styles.cardTitle }
                       data-testid={ `${index}-card-name` }
                     >
                       { e.strMeal }
@@ -147,15 +150,17 @@ export default function Recipes() {
           </div>
         )
         : (
-          <div>
+          <div className={ styles.grid }>
             {
               recipesData
                 .map((e, index) => (
                   <div
+                    className={ styles.card }
                     key={ e.idDrink }
                     data-testid={ `${index}-recipe-card` }
                   >
                     <h2
+                      className={ styles.cardTitle }
                       data-testid={ `${index}-card-name` }
                     >
                       { e.strDrink }

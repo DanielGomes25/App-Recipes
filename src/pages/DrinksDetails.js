@@ -2,7 +2,9 @@ import RecipeDetails from '../components/RecipeDetails';
 
 function DrinksDetails() {
   return (
-    <RecipeDetails />
+    <div className="meals">
+      <RecipeDetails />
+    </div>
   );
 }
 
