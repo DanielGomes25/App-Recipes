@@ -1,40 +1,43 @@
+/* Definindo o padrão de cores de forma mais coesa */
+:root {
+  --color-brand: #1E3A8A;
+  /* Azul forte */
+  --color-text: black;
+  /* Cinza claro */
+  --color-primary: #4CAF50;
+  /* Verde vibrante para interações */
+  --color-secondary: #6B7280;
+  /* Cinza mais escuro para subtítulos */
+  --font-family-base: 'Roboto', sans-serif;
+  /* Fonte básica */
+  --font-family-brand: 'Poppins', sans-serif;
+  /* Fonte para título */
+}
+
+/* Corpo principal */
 .meals {
   background: var(--color-brand);
   color: var(--color-text);
   font-family: var(--font-family-base);
   min-height: 100vh;
-  width: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.rocksGlass {
-  animation: shake 1s infinite ease;
-  max-height: 80vh;
-}
-
-/*
-#iceLeft {
-  animation: clink .8s infinite ease;
-  opacity: 0.6;
-  transform-origin: 36px 66px;
-}
-
-#iceRight {
-  animation: clink .8s .2s infinite ease;
-  opacity: 0.6;
-  transform-origin: 60px 78px;
-}
-*/
-
-.meals > .logo {
-  animation: shake 1.5s infinite ease;
+/* Logo com animação mais suave */
+.meals>.logo {
+  animation: shake 2s ease-in-out infinite;
   color: aliceblue;
   font-family: var(--font-family-brand);
   font-size: 3em;
   font-weight: 900;
+  margin-bottom: 20px;
 }
 
+/* Animação shake */
 @keyframes shake {
-
   0% {
     transform: rotate(5deg);
   }
@@ -48,22 +51,125 @@
   }
 }
 
-@keyframes clink {
-
-  0% {
-    transform: rotate(-10deg);
-  }
-
-  50% {
-    transform: rotate(20deg);
-  }
-
-  100% {
-    transform: rotate(-10deg);
-  }
-}
-
+/* Rodapé fixo */
 footer {
   bottom: 0;
   position: fixed;
+  width: 100%;
+  background-color: var(--color-secondary);
+  padding: 10px 0;
+  color: var(--color-text);
+  text-align: center;
+}
+
+/* Botões principais com animação */
+button {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+  cursor: pointer;
+  margin: 15px;
+  font-size: 1em;
+}
+
+/* Efeito de hover para botões */
+button:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Botão All */
+button#allCategory {
+  background-color: #FFB74D;
+}
+
+button#allCategory:hover {
+  background-color: #FFA726;
+}
+
+/* Grid de Cards de Receita */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+  padding-bottom: 60px;
+}
+
+/* Estilo para os cards */
+.card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  margin-bottom: 15px;
+}
+
+.card h2 {
+  font-size: 1.4em;
+  color: var(--color-primary);
+  font-family: var(--font-family-brand);
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* Navbar estilizada */
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background-color: var(--color-brand);
+  color: var(--color-text);
+  border-radius: 10px;
+}
+
+nav a {
+  color: var(--color-text);
+  font-size: 1.2em;
+  text-decoration: none;
+  font-weight: bold;
+  margin-right: 20px;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+/* Responsividade */
+@media screen and (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .meals>.logo {
+    font-size: 2em;
+  }
+
+  nav {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
 }

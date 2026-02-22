@@ -10,170 +10,143 @@ import {
 } from '../services/APIsFetch';
 
 export default function Recipes() {
+  // Guarda as receitas que serão exibidas na tela
   const [recipesData, setRecipesData] = useState([]);
+
+  // Guarda as categorias (Beef, Chicken, etc)
   const [category, setCategory] = useState([]);
+
+  // Guarda a categoria selecionada
   const [specificCategory, setSpecificCategory] = useState('');
 
+  // Estado para controlar o carregamento de dados
+  const [loading, setLoading] = useState(true);
+
+  // Limite de receitas exibidas
   const maxLength = 12;
+
+  // Limite de categorias exibidas
   const maxCategory = 5;
 
+  // Permite acessar a rota atual (/meals ou /drinks)
   const history = useHistory();
 
+  // Função que busca todas as receitas
   const getRecipes = useCallback(async () => {
+    setLoading(true);
+    let response;
     if (history.location.pathname === '/meals') {
-      const meals = await allMeals();
-      const twelveMeals = meals.meals.slice(0, maxLength);
-      setRecipesData(twelveMeals || []);
+      response = await allMeals();
+      setRecipesData(response.meals.slice(0, maxLength));
     } else if (history.location.pathname === '/drinks') {
-      const drinks = await allDrinks();
-      const twelveDrinks = drinks.drinks.slice(0, maxLength);
-      setRecipesData(twelveDrinks || []);
+      response = await allDrinks();
+      setRecipesData(response.drinks.slice(0, maxLength));
     }
-  }, [
-    history.location.pathname,
-  ]);
+    setLoading(false);
+  }, [history.location.pathname]);
+
+  // Função que busca categorias
+  const fetchCategories = async () => {
+    let response;
+    if (history.location.pathname === '/meals') {
+      response = await mealCategoryFetch();
+      setCategory(response.meals.slice(0, maxCategory));
+    } else if (history.location.pathname === '/drinks') {
+      response = await drinkCategoryFetch();
+      setCategory(response.drinks.slice(0, maxCategory));
+    }
+  };
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      if (history.location.pathname === '/meals') {
-        const categories = await mealCategoryFetch();
-        const fiveCategories = categories.meals.slice(0, maxCategory);
-        setCategory(fiveCategories);
-      } else if (history.location.pathname === '/drinks') {
-        const categories = await drinkCategoryFetch();
-        const fiveCategories = categories.drinks.slice(0, maxCategory);
-        setCategory(fiveCategories);
-      }
-    };
-
     getRecipes();
     fetchCategories();
-  }, [
-    history.location.pathname,
-    getRecipes,
-    setRecipesData,
-    setCategory,
-  ]);
+  }, [history.location.pathname, getRecipes]);
 
+  // Função que retorna qual servidor usar para as APIs
   const serverParameter = useCallback(() => {
     if (history.location.pathname === '/meals') {
-      const server = 'themealdb';
-      return server;
+      return 'themealdb';
     }
     if (history.location.pathname === '/drinks') {
-      const server = 'thecocktaildb';
-      return server;
+      return 'thecocktaildb';
     }
-  }, [
-    history.location.pathname,
-  ]);
+  }, [history.location.pathname]);
 
+  // Função para buscar receitas por categoria
   const fetchCategory = useCallback(async (categoryName) => {
     if (!categoryName) return;
     setSpecificCategory(categoryName);
     const categories = await getCategories(serverParameter(), categoryName);
     if (history.location.pathname === '/meals') {
-      const categoryRecipes = categories.meals.slice(0, maxLength);
-      setRecipesData(categoryRecipes);
+      setRecipesData(categories.meals.slice(0, maxLength));
     } else if (history.location.pathname === '/drinks') {
-      const categoryRecipes = categories.drinks.slice(0, maxLength);
-      setRecipesData(categoryRecipes);
+      setRecipesData(categories.drinks.slice(0, maxLength));
     }
-  }, [
-    serverParameter,
+  }, [serverParameter, history.location.pathname]);
 
-    history.location.pathname,
-  ]);
-
+  // Roda quando a categoria muda
   useEffect(() => {
     if (specificCategory) {
       fetchCategory(specificCategory);
     } else {
       fetchCategory('');
     }
-  }, [
-    specificCategory,
-    fetchCategory,
-  ]);
+  }, [specificCategory, fetchCategory]);
+
+  // Componente para renderizar o card da receita
+  const RecipeCard = ({ recipe, index, isMeal }) => (
+    <div className={styles.card} key={index} data-testid={`${index}-recipe-card`}>
+      <h2 className={styles.cardTitle} data-testid={`${index}-card-name`}>
+        {isMeal ? recipe.strMeal : recipe.strDrink}
+      </h2>
+      <img
+        data-testid={`${index}-card-img`}
+        src={isMeal ? recipe.strMealThumb : recipe.strDrinkThumb}
+        alt={isMeal ? recipe.strMeal : recipe.strDrink}
+      />
+    </div>
+  );
 
   return (
-    <div className={ styles.wrapper }>
+    <div className={styles.wrapper}>
+      {/* Título */}
       <h1>Recipes</h1>
 
-      <div className={ styles.categories }>
-        {
-          category
-            .map((e) => (
-              <div key={ e.strCategory }>
-                <button
-                  type="button"
-                  data-testid={ `${e.strCategory}-category-filter` }
-                  onClick={ () => fetchCategory(e.strCategory) }
-                >
-                  { e.strCategory }
-                </button>
-              </div>
-            ))
-        }
+      {/* Container das categorias */}
+      <div className={styles.categories}>
+        {category.map((e) => (
+          <div key={e.strCategory}>
+            <button
+              type="button"
+              data-testid={`${e.strCategory}-category-filter`}
+              onClick={() => fetchCategory(e.strCategory)}
+            >
+              {e.strCategory}
+            </button>
+          </div>
+        ))}
       </div>
-      <button
-        data-testid="All-category-filter"
-        onClick={ getRecipes }
-      >
+
+      {/* Botão para mostrar todas as receitas */}
+      <button data-testid="All-category-filter" onClick={getRecipes}>
         All
       </button>
 
-      {history.location.pathname === '/meals'
-        ? (
-          <div className={ styles.grid }>
-            {
-              recipesData
-                .map((e, index) => (
-                  <div
-                    className={ styles.card }
-                    key={ e.idMeal }
-                    data-testid={ `${index}-recipe-card` }
-                  >
-                    <h2
-                      className={ styles.cardTitle }
-                      data-testid={ `${index}-card-name` }
-                    >
-                      { e.strMeal }
-                    </h2>
-                    <img
-                      data-testid={ `${index}-card-img` }
-                      src={ e.strMealThumb }
-                      alt={ e.strMeal }
-                    />
-                  </div>))
-            }
-          </div>
-        )
-        : (
-          <div className={ styles.grid }>
-            {
-              recipesData
-                .map((e, index) => (
-                  <div
-                    className={ styles.card }
-                    key={ e.idDrink }
-                    data-testid={ `${index}-recipe-card` }
-                  >
-                    <h2
-                      className={ styles.cardTitle }
-                      data-testid={ `${index}-card-name` }
-                    >
-                      { e.strDrink }
-                    </h2>
-                    <img
-                      data-testid={ `${index}-card-img` }
-                      src={ e.strDrinkThumb }
-                      alt={ e.strDrink }
-                    />
-                  </div>))
-            }
-          </div>
-        )}
+      {/* Indicador de carregamento */}
+      {loading ? (
+        <div>Loading...</div>
+      ) : (
+        <div className={styles.grid}>
+          {recipesData.map((e, index) => (
+            <RecipeCard
+              key={index}
+              index={index}
+              recipe={e}
+              isMeal={history.location.pathname === '/meals'}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
