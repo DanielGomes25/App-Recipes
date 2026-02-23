@@ -35,33 +35,51 @@ function Login() {
     mealsRoute();
   };
   return (
-    <div className="meals">
-      <form>
-        <input
-          type="email"
-          data-testid="email-input"
-          onChange={ handleChange }
-          value={ userInfo.email }
-          name="email"
-        />
-        <input
-          type="password"
-          data-testid="password-input"
-          onChange={ handleChange }
-          value={ userInfo.password }
-          name="password"
-        />
-        <button
-          type="button"
-          data-testid="login-submit-btn"
-          disabled={ !disableButton }
-          onClick={ saveInStorage }
-        >
-          Enter
-        </button>
-      </form>
+    <div className="login-page">
+      <div className="login-card">
+        <div>
+          <h1 className="login-title">Bem vindo</h1>
+          <p className="login-subtitle">Entre para acessar suas receitas.</p>
+        </div>
+        <form>
+          <div className="login-field">
+            <label htmlFor="login-email">Email</label>
+            <input
+              id="login-email"
+              type="email"
+              data-testid="email-input"
+              onChange={ handleChange }
+              value={ userInfo.email }
+              name="email"
+              autoComplete="email"
+              placeholder="voce@exemplo.com"
+            />
+          </div>
+          <div className="login-field">
+            <label htmlFor="login-password">Senha</label>
+            <input
+              id="login-password"
+              type="password"
+              data-testid="password-input"
+              onChange={ handleChange }
+              value={ userInfo.password }
+              name="password"
+              autoComplete="current-password"
+              placeholder="••••••••"
+            />
+          </div>
+          <button
+            type="button"
+            data-testid="login-submit-btn"
+            disabled={ !disableButton }
+            onClick={ saveInStorage }
+            className="login-button"
+          >
+            Enter
+          </button>
+        </form>
+      </div>
     </div>
-
   );
 }
 

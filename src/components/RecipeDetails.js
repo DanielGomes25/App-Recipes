@@ -1,17 +1,17 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import copy from 'clipboard-copy';
 import { FetchIdDrink, FetchIdMeals }
   from '../services/APIsFetch';
 import shareIcon from '../images/shareIcon.svg';
 import whiteHeartIcon from '../images/whiteHeartIcon.svg';
+import blackHeartIcon from '../images/blackHeartIcon.svg';
 import styles from './RecipeDetails.module.css';
 
 function RecipeDetails() {
   const [copyRecipe, setCopyRecipe] = useState(false);
-  const [favoritMealOrDrink, setFavoriteMealOrDrink] = useState([]);
-  const [, setSaveFavorit] = useState([]);
   const [currentRecipe, setCurrentRecipe] = useState(null);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const location = useLocation();
   const history = useHistory();
@@ -27,22 +27,39 @@ function RecipeDetails() {
     return sanitized;
   };
 
+  const FAVORITES_KEY = 'favoriteRecipes';
+
+  const getStoredFavorites = useCallback(() => (
+    JSON.parse(localStorage.getItem(FAVORITES_KEY)) || []
+  ), []);
+
+  const isRecipeFavorited = useCallback((recipeId) => (
+    getStoredFavorites().some((item) => item.id === recipeId)
+  ), [getStoredFavorites]);
+
   useEffect(() => {
     const handleChange = async () => {
       if (isMeal) {
         const dataIdMeals = await FetchIdMeals((location.pathname.match(/\d+/g))[0]);
         const meal = dataIdMeals.meals[0];
-        setFavoriteMealOrDrink(meal);
         setCurrentRecipe(sanitizeRecipe(meal));
       } else {
         const dataIdDrinks = await FetchIdDrink(location.pathname.match(/\d+/g)[0]);
         const drink = dataIdDrinks.drinks[0];
-        setFavoriteMealOrDrink(drink);
         setCurrentRecipe(sanitizeRecipe(drink));
       }
     };
     handleChange();
   }, [location.pathname, isMeal]);
+
+  useEffect(() => {
+    if (!currentRecipe) {
+      setIsFavorite(false);
+      return;
+    }
+    const recipeId = isMeal ? currentRecipe.idMeal : currentRecipe.idDrink;
+    setIsFavorite(isRecipeFavorited(recipeId));
+  }, [currentRecipe, isMeal, isRecipeFavorited]);
 
   const copyLink = () => {
     const local = location.pathname;
@@ -51,16 +68,27 @@ function RecipeDetails() {
   };
 
   const favoriteRecipe = () => {
+    if (!currentRecipe) {
+      return;
+    }
     const isMealType = location.pathname.includes('/meals');
-    setSaveFavorit((prevState) => [...prevState, {
-      id: isMealType ? favoritMealOrDrink.idMeal : favoritMealOrDrink.idDrink,
+    const recipeId = isMealType ? currentRecipe.idMeal : currentRecipe.idDrink;
+    const favoriteEntry = {
+      id: recipeId,
       type: isMealType ? 'meal' : 'drink',
-      nationality: favoritMealOrDrink.strArea || '',
-      category: favoritMealOrDrink.strCategory || '',
-      alcoholicOrNot: favoritMealOrDrink.strAlcoholic || '',
-      name: favoritMealOrDrink.strMeal || favoritMealOrDrink.strDrink,
-      image: favoritMealOrDrink.strMealThumb || favoritMealOrDrink.strDrinkThumb,
-    }]);
+      nationality: currentRecipe.strArea || '',
+      category: currentRecipe.strCategory || '',
+      alcoholicOrNot: currentRecipe.strAlcoholic || '',
+      name: currentRecipe.strMeal || currentRecipe.strDrink,
+      image: currentRecipe.strMealThumb || currentRecipe.strDrinkThumb,
+    };
+    const storedFavorites = getStoredFavorites();
+    const exists = storedFavorites.some((item) => item.id === recipeId);
+    const updatedFavorites = exists
+      ? storedFavorites.filter((item) => item.id !== recipeId)
+      : [...storedFavorites, favoriteEntry];
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(updatedFavorites));
+    setIsFavorite(!exists);
   };
 
   const ingredientsList = useMemo(() => {
@@ -156,7 +184,10 @@ function RecipeDetails() {
           onClick={ favoriteRecipe }
           className={ styles.iconButton }
         >
-          <img src={ whiteHeartIcon } alt="Botao de Favoritar" />
+          <img
+            src={ isFavorite ? blackHeartIcon : whiteHeartIcon }
+            alt="Botao de Favoritar"
+          />
         </button>
       </div>
 

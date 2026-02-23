@@ -1,8 +1,71 @@
+.filters {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.filterButton {
+  background: var(--color-highlight);
+  color: var(--color-ink);
+  padding: 8px 12px;
+  border-radius: var(--radius-m);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-4);
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-l);
+  padding: var(--space-3);
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cardLink {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
 .favorite-recipe-img {
   width: 100%;
-  max-width: 240px;
-  height: auto;
+  height: 180px;
+  object-fit: cover;
   border-radius: var(--radius-l);
   box-shadow: var(--shadow-soft);
-  object-fit: cover;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-md);
+  color: var(--color-ink);
+}
+
+.meta {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--font-size-sm);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.iconButton {
+  background: var(--color-highlight);
+  padding: 8px;
+  border-radius: var(--radius-m);
+}
+
+.iconButton img {
+  width: 18px;
+  height: 18px;
 }

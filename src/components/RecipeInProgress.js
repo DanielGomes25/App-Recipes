@@ -2,7 +2,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import useLocalStorage from '../hooks/useLocalStorage';
+import whiteHeartIcon from '../images/whiteHeartIcon.svg';
+import blackHeartIcon from '../images/blackHeartIcon.svg';
+import styles from './RecipeInProgress.module.css';
 
+const FAVORITES_KEY = 'favoriteRecipes';
+const MAX_INGREDIENTS = 20;
 function RecipeInProgress(props) {
   const [currentRecipe, setCurrentRecipe] = useState(null);
   const [concludedIngredients, setConcludedIngredients] = useState([]);
@@ -11,16 +16,15 @@ function RecipeInProgress(props) {
   const [doneRecipes, setDoneRecipes] = useLocalStorage('doneRecipes', []);
   const [errorNotification, setErrorNotification] = useState(null);
   const [allIngredientsCompleted, setAllIngredientsCompleted] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
   const history = useHistory();
 
-  // cria um array que contém os nomes das propriedades dos ingredientes
-  const numIngredientes = 20;
+  const { match: { params: { id } }, currentPage } = props;
+  const isMeal = currentPage === 'meals';
   const ingredientesIndex = useMemo(() => Array.from(
-    { length: numIngredientes },
+    { length: MAX_INGREDIENTS },
     (_, index) => `strIngredient${index + 1}`,
   ), []);
-
-  const { match: { params: { id } }, currentPage } = props;
 
   const ingredientCount = useMemo(() => {
     if (!currentRecipe) {
@@ -33,47 +37,41 @@ function RecipeInProgress(props) {
   }, [currentRecipe, ingredientesIndex]);
 
   const savedIngredients = useMemo(() => {
-    if (currentPage === 'meals') {
-      return (meal && meal[id]) ? meal[id] : [];
-    }
-    if (currentPage === 'drinks') {
-      return (drink && drink[id]) ? drink[id] : [];
+    const storedByType = isMeal ? meal : drink;
+    if (storedByType && storedByType[id]) {
+      return storedByType[id];
     }
     return [];
-  }, [currentPage, meal, drink, id]);
+  }, [isMeal, meal, drink, id]);
 
-  // chama API
-  async function fetchAPI(url) {
-    const response = await fetch(url);
-    const data = await response.json();
-    return data;
-  }
-
-  // atualiza o estado das variáveis
   useEffect(() => {
     setConcludedIngredients(savedIngredients);
     setAllIngredientsCompleted(savedIngredients.length === ingredientCount);
   }, [savedIngredients, ingredientCount]);
 
-  // busca os detalhes da receita da api
   useEffect(() => {
     async function fetchDataApi() {
-      let apiURL = '';
-      if (currentPage === 'meals') {
-        apiURL = `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`;
-      }
-      if (currentPage === 'drinks') {
-        apiURL = `https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${id}`;
-      }
-      const { meals, drinks } = await fetchAPI(apiURL);
-      const data = currentPage === 'meals' ? meals : drinks;
+      const apiURL = isMeal
+        ? `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`
+        : `https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${id}`;
+      const response = await fetch(apiURL);
+      const { meals, drinks } = await response.json();
+      const data = isMeal ? meals : drinks;
       const foundRecipe = data.find((item) => item.idMeal === id || item.idDrink === id);
       setCurrentRecipe(foundRecipe);
     }
     fetchDataApi();
-  }, [currentPage, id]);
+  }, [isMeal, id]);
+  useEffect(() => {
+    if (!currentRecipe) {
+      setIsFavorite(false);
+      return;
+    }
+    const recipeId = isMeal ? currentRecipe.idMeal : currentRecipe.idDrink;
+    const stored = JSON.parse(localStorage.getItem(FAVORITES_KEY)) || [];
+    setIsFavorite(stored.some((item) => item.id === recipeId));
+  }, [currentRecipe, isMeal]);
 
-  // lida com a alteração do estado dos ingredientes selecionados
   const handleChangeCheckbox = (ingredients) => {
     const modifiedIngredients = concludedIngredients.includes(ingredients)
       ? concludedIngredients.filter(
@@ -81,134 +79,165 @@ function RecipeInProgress(props) {
       )
       : [...concludedIngredients, ingredients];
     setConcludedIngredients(modifiedIngredients);
-    if (currentPage === 'meals') {
+    if (isMeal) {
       setMeal({
         ...(meal || {}),
-        [id]:
-          [...modifiedIngredients],
+        [id]: [...modifiedIngredients],
       });
+      return;
     }
-    if (currentPage === 'drinks') {
-      setDrinks({
-        ...(drink || {}),
-        [id]:
-          [...modifiedIngredients],
-      });
-    }
+    setDrinks({
+      ...(drink || {}),
+      [id]: [...modifiedIngredients],
+    });
   };
 
-  // renderiaza a lista de ingredientes
-  function renderIngredients() {
-    return ingredientesIndex.map((ingredient, index) => {
+  const renderIngredients = () => (
+    ingredientesIndex.map((ingredient, index) => {
       const currentIngredientName = currentRecipe[ingredient];
-      if (currentIngredientName) {
-        const isChecked = concludedIngredients.includes(currentIngredientName);
-        const labelStyle = isChecked
-          ? {
-            display: 'flex',
-            gap: 10,
-            textDecoration: 'line-through solid rgb(0, 0, 0)',
-          }
-          : {
-            display: 'flex',
-            gap: 10,
-          };
-        return (
-          <label
-            key={ currentIngredientName }
-            data-testid={ `${index}-ingredient-step` }
-            style={ labelStyle }
-          >
-            <p>{currentIngredientName}</p>
-            <input
-              type="checkbox"
-              checked={ isChecked }
-              onChange={ () => handleChangeCheckbox(currentIngredientName) }
-            />
-          </label>
-        );
+      if (!currentIngredientName) {
+        return null;
       }
-      return null;
-    });
+      const isChecked = concludedIngredients.includes(currentIngredientName);
+      return (
+        <label
+          key={ currentIngredientName }
+          data-testid={ `${index}-ingredient-step` }
+          className={ isChecked ? styles.ingredientChecked : styles.ingredientRow }
+        >
+          <span>{currentIngredientName}</span>
+          <input
+            type="checkbox"
+            checked={ isChecked }
+            onChange={ () => handleChangeCheckbox(currentIngredientName) }
+          />
+        </label>
+      );
+    })
+  );
+
+  const handleCopyLink = () => {
+    const completeURL = window.location.href;
+    const lastPosition = completeURL.lastIndexOf('/');
+    const slicedURL = completeURL.slice(0, lastPosition);
+    navigator.clipboard.writeText(slicedURL);
+    setErrorNotification('Link copied!');
+  };
+
+  const concludeRecipe = () => {
+    const currentDate = new Date();
+    setDoneRecipes([...doneRecipes, {
+      id,
+      type: isMeal ? 'meal' : 'drink',
+      nationality: currentRecipe.strArea || '',
+      category: currentRecipe.strCategory || '',
+      alcoholicOrNot: currentRecipe.strAlcoholic || '',
+      name: currentRecipe.strMeal || currentRecipe.strDrink,
+      image: currentRecipe.strDrinkThumb || currentRecipe.strMealThumb,
+      doneDate: currentDate.toISOString(),
+      tags: currentRecipe.strTags ? currentRecipe.strTags.split(',') : [],
+    }]);
+    history.push('/done-recipes');
+  };
+
+  const favoriteRecipe = () => {
+    const recipeId = isMeal ? currentRecipe.idMeal : currentRecipe.idDrink;
+    const favoriteEntry = {
+      id: recipeId,
+      type: isMeal ? 'meal' : 'drink',
+      nationality: currentRecipe.strArea || '',
+      category: currentRecipe.strCategory || '',
+      alcoholicOrNot: currentRecipe.strAlcoholic || '',
+      name: currentRecipe.strMeal || currentRecipe.strDrink,
+      image: currentRecipe.strMealThumb || currentRecipe.strDrinkThumb,
+    };
+    const storedFavorites = JSON.parse(localStorage.getItem(FAVORITES_KEY)) || [];
+    const exists = storedFavorites.some((item) => item.id === recipeId);
+    const updatedFavorites = exists
+      ? storedFavorites.filter((item) => item.id !== recipeId)
+      : [...storedFavorites, favoriteEntry];
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(updatedFavorites));
+    setIsFavorite(!exists);
+  };
+
+  if (!currentRecipe) {
+    return <div className="meals" />;
   }
 
-  function renderPage() {
-    if (!currentRecipe) {
-      return null;
-    }
+  const title = isMeal ? currentRecipe.strMeal : currentRecipe.strDrink;
+  const image = isMeal ? currentRecipe.strMealThumb : currentRecipe.strDrinkThumb;
 
-    const { strMeal, strMealThumb, strDrink, strDrinkThumb, strCategory,
-      strInstructions } = currentRecipe;
+  return (
+    <div className="meals">
+      <div className={ styles.progressPage }>
+        <section className={ styles.hero }>
+          <div className={ styles.heroText }>
+            <h2 data-testid="recipe-title">{title}</h2>
+            <p data-testid="recipe-category" className={ styles.category }>
+              {currentRecipe.strCategory}
+            </p>
+          </div>
+          <img
+            className={ styles.photo }
+            src={ image }
+            alt={ isMeal ? 'Meal img' : 'Drink img' }
+            data-testid="recipe-photo"
+          />
+        </section>
 
-    const handleCopyLink = async () => {
-      const completeURL = window.location.href;
-      const lastPosition = completeURL.lastIndexOf('/');
-      const slicedURL = completeURL.slice(0, lastPosition);
-      navigator.clipboard.writeText(slicedURL);
-      setErrorNotification('Link copied!');
-    };
+        <section className={ styles.card }>
+          <h3>Ingredientes</h3>
+          <div className={ styles.ingredientsList }>
+            {renderIngredients()}
+          </div>
+        </section>
 
-    const concludeRecipe = () => {
-      const currentDate = new Date();
-      setDoneRecipes([...doneRecipes,
-        {
-          id,
-          type: currentPage === 'meals' ? 'meal' : 'drink',
-          nationality: currentRecipe.strArea || '',
-          category: currentRecipe.strCategory || '',
-          alcoholicOrNot: currentRecipe.strAlcoholic || '',
-          name: currentRecipe.strMeal || currentRecipe.strDrink,
-          image: currentRecipe.strDrinkThumb || currentRecipe.strMealThumb,
-          doneDate: currentDate.toISOString(),
-          tags: currentRecipe.strTags ? currentRecipe.strTags.split(',') : [],
-        }]);
-      history.push('/done-recipes');
-    };
+        <section className={ styles.card }>
+          <h3>Instruções</h3>
+          <p data-testid="instructions" className={ styles.instructions }>
+            {currentRecipe.strInstructions}
+          </p>
+        </section>
 
-    return (
-      <>
-        <h2 data-testid="recipe-title">{currentPage === 'meals' ? strMeal : strDrink}</h2>
-        <img
-          className="image"
-          src={ currentPage === 'meals' ? strMealThumb : strDrinkThumb }
-          alt={ currentPage === 'meals' ? 'Meal img' : 'Drink img' }
-          data-testid="recipe-photo"
-        />
-        <h4 data-testid="recipe-category">{strCategory}</h4>
-        <h3>Ingredientes</h3>
-        {renderIngredients()}
-        <h3>Instruções</h3>
-        <p data-testid="instructions">{strInstructions}</p>
-        <span>{errorNotification}</span>
+        {errorNotification && (
+          <span className={ styles.notification }>{errorNotification}</span>
+        )}
 
-        <section>
+        <section className={ styles.actions }>
           <button
             type="button"
             data-testid="share-btn"
             onClick={ handleCopyLink }
+            className={ styles.secondaryButton }
           >
             Compartilhar
           </button>
           <button
             type="button"
             data-testid="favorite-btn"
+            className={ styles.secondaryButton }
+            onClick={ favoriteRecipe }
           >
-            Favorita
+            <img
+              src={ isFavorite ? blackHeartIcon : whiteHeartIcon }
+              alt="Botao de Favoritar"
+            />
           </button>
           <button
             type="button"
             data-testid="finish-recipe-btn"
             onClick={ () => concludeRecipe() }
             disabled={ !allIngredientsCompleted }
+            className={ styles.primaryButton }
           >
             Finalizar Receita
           </button>
         </section>
-      </>
-    );
-  }
-  return <div className="meals">{renderPage()}</div>;
+      </div>
+    </div>
+  );
 }
+
 RecipeInProgress.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({

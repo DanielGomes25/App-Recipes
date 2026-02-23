@@ -1,0 +1,109 @@
+.progressPage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 420px);
+  gap: var(--space-5);
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-soft);
+}
+
+.heroText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.category {
+  color: var(--color-muted);
+  font-size: var(--font-size-sm);
+}
+
+.photo {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-card);
+  object-fit: cover;
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-l);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-soft);
+}
+
+.ingredientsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-3);
+}
+
+.ingredientRow,
+.ingredientChecked {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 10px 12px;
+  border-radius: var(--radius-m);
+  border: 1px solid var(--color-border);
+  background: #fff9f2;
+}
+
+.ingredientChecked {
+  text-decoration: line-through;
+  color: var(--color-muted);
+  background: #f1eee8;
+}
+
+.instructions {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.notification {
+  align-self: flex-start;
+  padding: 6px 10px;
+  border-radius: var(--radius-m);
+  background: var(--color-highlight);
+  color: var(--color-ink);
+  font-size: var(--font-size-sm);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.primaryButton {
+  background: var(--color-accent);
+  color: #ffffff;
+}
+
+.secondaryButton {
+  background: var(--color-highlight);
+  color: var(--color-ink);
+}
+
+.secondaryButton img {
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+}
