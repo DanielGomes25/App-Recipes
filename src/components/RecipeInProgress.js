@@ -22,6 +22,26 @@ function RecipeInProgress(props) {
 
   const { match: { params: { id } }, currentPage } = props;
 
+  const ingredientCount = useMemo(() => {
+    if (!currentRecipe) {
+      return 0;
+    }
+    return ingredientesIndex.reduce(
+      (count, ingredients) => (currentRecipe[ingredients] ? count + 1 : count),
+      0,
+    );
+  }, [currentRecipe, ingredientesIndex]);
+
+  const savedIngredients = useMemo(() => {
+    if (currentPage === 'meals') {
+      return (meal && meal[id]) ? meal[id] : [];
+    }
+    if (currentPage === 'drinks') {
+      return (drink && drink[id]) ? drink[id] : [];
+    }
+    return [];
+  }, [currentPage, meal, drink, id]);
+
   // chama API
   async function fetchAPI(url) {
     const response = await fetch(url);
@@ -31,27 +51,9 @@ function RecipeInProgress(props) {
 
   // atualiza o estado das variáveis
   useEffect(() => {
-    const checkQuantity = () => {
-      if (currentRecipe) {
-        const cont = ingredientesIndex.reduce(
-          (count, ingredients) => (currentRecipe[ingredients] ? count + 1 : count),
-          0,
-        );
-        return cont;
-      }
-    };
-    const updateIngredientCompletion = () => {
-      if (currentPage === 'meals' && meal) {
-        setConcludedIngredients(meal[id]);
-        setAllIngredientsCompleted(meal[id].length === checkQuantity());
-      }
-      if (currentPage === 'drinks' && drink) {
-        setConcludedIngredients(drink[id]);
-        setAllIngredientsCompleted(drink[id].length === checkQuantity());
-      }
-    };
-    updateIngredientCompletion();
-  }, [meal, drink, id, currentPage, ingredientesIndex, currentRecipe]);
+    setConcludedIngredients(savedIngredients);
+    setAllIngredientsCompleted(savedIngredients.length === ingredientCount);
+  }, [savedIngredients, ingredientCount]);
 
   // busca os detalhes da receita da api
   useEffect(() => {
@@ -81,15 +83,16 @@ function RecipeInProgress(props) {
     setConcludedIngredients(modifiedIngredients);
     if (currentPage === 'meals') {
       setMeal({
-        ...meal,
+        ...(meal || {}),
         [id]:
-        [...modifiedIngredients],
+          [...modifiedIngredients],
       });
     }
     if (currentPage === 'drinks') {
       setDrinks({
+        ...(drink || {}),
         [id]:
-        [...modifiedIngredients],
+          [...modifiedIngredients],
       });
     }
   };

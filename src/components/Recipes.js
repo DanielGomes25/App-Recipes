@@ -1,6 +1,18 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
-import styles from './Recipes.module.css';
+import React, { useEffect, useState, useCallback, useContext } from 'react';
+import { Link, useHistory } from 'react-router-dom';
+import '../styles/Recipes.css';
+import All from '../images/All.svg';
+import Breakfast from '../images/breakfast.svg';
+import Chicken from '../images/chicken.svg';
+import Dessert from '../images/dessert.svg';
+import Goat from '../images/goat.svg';
+import Beef from '../images/beef.svg';
+import AllDrinks from '../images/AllDrinks.svg';
+import ordinary from '../images/ordinary.svg';
+import other from '../images/other.svg';
+import shake from '../images/shake.svg';
+import cocoa from '../images/cocoa.svg';
+import cocktail from '../images/cocktail.svg';
 import {
   allMeals,
   allDrinks,
@@ -8,145 +20,185 @@ import {
   mealCategoryFetch,
   drinkCategoryFetch,
 } from '../services/APIsFetch';
+import Context from '../context/Context';
 
 export default function Recipes() {
-  // Guarda as receitas que serão exibidas na tela
-  const [recipesData, setRecipesData] = useState([]);
-
-  // Guarda as categorias (Beef, Chicken, etc)
   const [category, setCategory] = useState([]);
-
-  // Guarda a categoria selecionada
   const [specificCategory, setSpecificCategory] = useState('');
-
-  // Estado para controlar o carregamento de dados
-  const [loading, setLoading] = useState(true);
-
-  // Limite de receitas exibidas
+  const imgArray = [Beef, Breakfast, Chicken, Dessert, Goat];
+  const { recipesData, setRecipesData } = useContext(Context);
   const maxLength = 12;
-
-  // Limite de categorias exibidas
   const maxCategory = 5;
-
-  // Permite acessar a rota atual (/meals ou /drinks)
+  const imgArrayDrinks = [ordinary, cocktail, shake, other, cocoa];
   const history = useHistory();
 
-  // Função que busca todas as receitas
   const getRecipes = useCallback(async () => {
-    setLoading(true);
-    let response;
     if (history.location.pathname === '/meals') {
-      response = await allMeals();
-      setRecipesData(response.meals.slice(0, maxLength));
+      const meals = await allMeals();
+      const twelveMeals = meals.meals.slice(0, maxLength);
+      setRecipesData(twelveMeals || []);
     } else if (history.location.pathname === '/drinks') {
-      response = await allDrinks();
-      setRecipesData(response.drinks.slice(0, maxLength));
+      const drinks = await allDrinks();
+      const twelveDrinks = drinks.drinks.slice(0, maxLength);
+      setRecipesData(twelveDrinks || []);
     }
-    setLoading(false);
-  }, [history.location.pathname]);
-
-  // Função que busca categorias
-  const fetchCategories = async () => {
-    let response;
-    if (history.location.pathname === '/meals') {
-      response = await mealCategoryFetch();
-      setCategory(response.meals.slice(0, maxCategory));
-    } else if (history.location.pathname === '/drinks') {
-      response = await drinkCategoryFetch();
-      setCategory(response.drinks.slice(0, maxCategory));
-    }
-  };
+  }, [
+    history.location.pathname, setRecipesData,
+  ]);
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      if (history.location.pathname === '/meals') {
+        const categories = await mealCategoryFetch();
+        const fiveCategories = categories.meals.slice(0, maxCategory);
+        setCategory(fiveCategories);
+      } else if (history.location.pathname === '/drinks') {
+        const categories = await drinkCategoryFetch();
+        const fiveCategories = categories.drinks.slice(0, maxCategory);
+        setCategory(fiveCategories);
+      }
+    };
+
     getRecipes();
     fetchCategories();
-  }, [history.location.pathname, getRecipes]);
+  }, [
+    history.location.pathname,
+    getRecipes,
+    setRecipesData,
+    setCategory,
+  ]);
 
-  // Função que retorna qual servidor usar para as APIs
   const serverParameter = useCallback(() => {
     if (history.location.pathname === '/meals') {
-      return 'themealdb';
+      const server = 'themealdb';
+      return server;
     }
     if (history.location.pathname === '/drinks') {
-      return 'thecocktaildb';
+      const server = 'thecocktaildb';
+      return server;
     }
-  }, [history.location.pathname]);
+  }, [
+    history.location.pathname,
+  ]);
 
-  // Função para buscar receitas por categoria
   const fetchCategory = useCallback(async (categoryName) => {
     if (!categoryName) return;
     setSpecificCategory(categoryName);
     const categories = await getCategories(serverParameter(), categoryName);
     if (history.location.pathname === '/meals') {
-      setRecipesData(categories.meals.slice(0, maxLength));
+      const categoryRecipes = categories.meals.slice(0, maxLength);
+      setRecipesData(categoryRecipes);
     } else if (history.location.pathname === '/drinks') {
-      setRecipesData(categories.drinks.slice(0, maxLength));
+      const categoryRecipes = categories.drinks.slice(0, maxLength);
+      setRecipesData(categoryRecipes);
     }
-  }, [serverParameter, history.location.pathname]);
+  }, [
+    serverParameter,
+    history.location.pathname,
+    setRecipesData,
+  ]);
 
-  // Roda quando a categoria muda
   useEffect(() => {
     if (specificCategory) {
       fetchCategory(specificCategory);
     } else {
       fetchCategory('');
     }
-  }, [specificCategory, fetchCategory]);
-
-  // Componente para renderizar o card da receita
-  const RecipeCard = ({ recipe, index, isMeal }) => (
-    <div className={styles.card} key={index} data-testid={`${index}-recipe-card`}>
-      <h2 className={styles.cardTitle} data-testid={`${index}-card-name`}>
-        {isMeal ? recipe.strMeal : recipe.strDrink}
-      </h2>
-      <img
-        data-testid={`${index}-card-img`}
-        src={isMeal ? recipe.strMealThumb : recipe.strDrinkThumb}
-        alt={isMeal ? recipe.strMeal : recipe.strDrink}
-      />
-    </div>
-  );
+  }, [
+    specificCategory,
+    fetchCategory,
+  ]);
 
   return (
-    <div className={styles.wrapper}>
-      {/* Título */}
-      <h1>Recipes</h1>
-
-      {/* Container das categorias */}
-      <div className={styles.categories}>
-        {category.map((e) => (
-          <div key={e.strCategory}>
-            <button
-              type="button"
-              data-testid={`${e.strCategory}-category-filter`}
-              onClick={() => fetchCategory(e.strCategory)}
-            >
-              {e.strCategory}
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {/* Botão para mostrar todas as receitas */}
-      <button data-testid="All-category-filter" onClick={getRecipes}>
-        All
-      </button>
-
-      {/* Indicador de carregamento */}
-      {loading ? (
-        <div>Loading...</div>
-      ) : (
-        <div className={styles.grid}>
-          {recipesData.map((e, index) => (
-            <RecipeCard
-              key={index}
-              index={index}
-              recipe={e}
-              isMeal={history.location.pathname === '/meals'}
+    <div>
+      <div className="buttons-container-recipes">
+        <div>
+          <button
+            data-testid="All-category-filter"
+            onClick={ getRecipes }
+          >
+            <img
+              src={ history.location.pathname === '/meals' ? All : AllDrinks }
+              alt="Filtro All"
             />
-          ))}
+          </button>
         </div>
-      )}
+        {
+          category
+            .map((e, index) => (
+              <div key={ e.strCategory }>
+                <button
+                  type="button"
+                  data-testid={ `${e.strCategory}-category-filter` }
+                  onClick={ () => fetchCategory(e.strCategory) }
+                >
+                  <img
+                    src={ history.location.pathname === '/meals' ? imgArray[index]
+                      : imgArrayDrinks[index] }
+                    alt="Imagens dos Botoes"
+                  />
+                </button>
+              </div>
+            ))
+        }
+      </div>
+      {history.location.pathname === '/meals'
+        ? (
+          <div className="recipes-container">
+            {
+              (recipesData || [])
+                .map((e, index) => (
+                  <div
+                    className="cards-container"
+                    key={ e.idMeal }
+                    data-testid={ `${index}-recipe-card` }
+                  >
+                    <Link
+                      to={ `/meals/${e.idMeal}` }
+                    >
+                      <img
+                        className="image-card"
+                        data-testid={ `${index}-card-img` }
+                        src={ e.strMealThumb }
+                        alt={ e.strMeal }
+                      />
+                    </Link>
+                    <p
+                      data-testid={ `${index}-card-name` }
+                    >
+                      {e.strMeal}
+                    </p>
+                  </div>))
+            }
+          </div>
+        )
+        : (
+          <div className="recipes-container">
+            {
+              (recipesData || [])
+                .map((e, index) => (
+                  <div
+                    className="cards-container"
+                    key={ e.idDrink }
+                    data-testid={ `${index}-recipe-card` }
+                  >
+                    <Link to={ `/drinks/${e.idDrink}` }>
+                      <img
+                        className="image-card"
+                        data-testid={ `${index}-card-img` }
+                        src={ e.strDrinkThumb }
+                        alt={ e.strDrink }
+                      />
+                    </Link>
+                    <p
+                      data-testid={ `${index}-card-name` }
+                    >
+                      {e.strDrink}
+                    </p>
+                  </div>))
+            }
+          </div>
+        )}
     </div>
   );
 }

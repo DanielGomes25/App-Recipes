@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import shareIcon from '../images/shareIcon.svg';
-import styles from '../DoneRecipes.module.css';
+import styles from './DoneRecipes.module.css';
 
 function DoneRecipes() {
   const [recipesDone, setRecipesDone] = useState([]);
@@ -15,7 +15,7 @@ function DoneRecipes() {
   };
 
   useEffect(() => {
-    const recipes = JSON.parse(localStorage.getItem('doneRecipes'));
+    const recipes = JSON.parse(localStorage.getItem('doneRecipes')) || [];
     setRecipesDone(recipes);
     setRenderRecipes(recipes);
   }, [setRecipesDone]);

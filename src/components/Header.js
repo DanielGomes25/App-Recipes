@@ -1,10 +1,10 @@
 import { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
-import styles from './Header.module.css';
 import profileIcon from '../images/profileIcon.svg';
 import searchIcon from '../images/searchIcon.svg';
 import Context from '../context/Context';
 import SearchBar from './SearchBar';
+import styles from './Header.module.css';
 
 function Header() {
   const { titleHeader, loadingSearch, textSearch, setTextSearch } = useContext(Context);

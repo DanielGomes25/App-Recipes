@@ -1,32 +1,37 @@
+.recipePhoto {
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  border-radius: 8px;
+}
+
 .carousel {
   display: flex;
-  gap: 10px;
-  height: 30vh;
-  overflow-x: scroll;
-  overflow-y: hidden;
-  white-space: nowrap;
-  width: 25%;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 8px 0;
 }
 
 .displayCard {
-  height: 100%;
-  width: 50%;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 }
 
 .recommendationImage {
-  height: 50%;
-}
-
-.recipePhoto {
-  height: 30%;
-  width: 30%;
+  width: 100%;
+  max-width: 160px;
+  height: auto;
+  border-radius: 6px;
 }
 
 .buttonStart {
-  bottom: 0;
-  position: fixed;
-  left: 50%;
-  right: 50%;
-  width: var(--size-button-w);
+  margin: 16px 0;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #ffb703;
+  cursor: pointer;
 }
-

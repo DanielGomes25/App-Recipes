@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react';
-import 'react-toastify/dist/ReactToastify.css';
 import { useHistory } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 import Context from '../context/Context';
 import {
   ingredientFetchMeal,
@@ -10,62 +9,77 @@ import {
   nameFetchDrink, firsLetterFetchDrink,
 } from '../services/APIsFetch';
 
-const RecipeCard = ({ element, index, type }) => (
-  <div data-testid={`${index}-recipe-card`} key={index}>
-    <img
-      data-testid={`${index}-card-img`}
-      src={type === 'Drinks' ? element.strDrinkThumb : element.strMealThumb}
-      alt="Imagem da receita"
-    />
-    <h4 data-testid={`${index}-card-name`}>
-      {type === 'Drinks' ? element.strDrink : element.strMeal}
-    </h4>
-  </div>
-);
-
 export default function SearchBar() {
   const {
     textSearch,
     titleHeader,
     recipesSearch,
-    setRecipesSearch,
-  } = useContext(Context);
-
+    setRecipesData } = useContext(Context);
   const [inputSearch, setInputSearch] = useState('');
   const history = useHistory();
   const maxNumber = 12;
 
-  const recipeFilter = async (ingredientAPI, nameAPI, firstLetterAPI) => {
-    let response = null;
-    if (inputSearch === 'ingredient') {
-      response = await ingredientAPI(textSearch);
-      console.log(response);
-    } else if (inputSearch === 'name') {
-      response = await nameAPI(textSearch);
-    } else if (inputSearch === 'first-letter') {
+  const getAlertFn = () => {
+    if (typeof global !== 'undefined' && global.alert) {
+      return global.alert;
+    }
+    if (typeof window !== 'undefined' && window.alert) {
+      return window.alert;
+    }
+    return () => {};
+  };
+
+  const getSearchResponse = async (ingredientAPI, nameAPI, firstLetterAPI) => {
+    switch (inputSearch) {
+    case 'ingredient':
+      return ingredientAPI(textSearch);
+    case 'name':
+      return nameAPI(textSearch);
+    case 'first-letter':
       if (textSearch.length > 1) {
-        return toast.error('Your search must have only 1 (one) character');
+        getAlertFn()('Your search must have only 1 (one) character');
+        return null;
       }
-      response = await firstLetterAPI(textSearch);
+      return firstLetterAPI(textSearch);
+    default:
+      return null;
     }
-    if (response[titleHeader.toLowerCase()] !== null) {
-      setRecipesSearch(response[titleHeader.toLowerCase()]);
-    } else {
-      return toast.error('Sorry, we haven\'t found any recipes for these filters.');
+  };
+
+  const applySearchResponse = (response) => {
+    if (!response) {
+      return;
     }
+    const responseKey = titleHeader.toLowerCase();
+    if (response[responseKey] === null) {
+      Swal.fire({
+        position: 'top-end',
+        icon: 'error',
+        title: 'Sorry, we haven\'t found any recipes for these filters.',
+        showConfirmButton: false,
+        timer: 1000,
+      });
+      return;
+    }
+
+    setRecipesData(response[responseKey]);
     if (titleHeader === 'Meals' && response.meals.length === 1) {
       const { idMeal } = response.meals[0];
       history.push(`/meals/${idMeal}`);
-    } else if (titleHeader === 'Drinks' && response.drinks.length === 1) {
+      return;
+    }
+    if (titleHeader === 'Drinks' && response.drinks.length === 1) {
       const { idDrink } = response.drinks[0];
       history.push(`/drinks/${idDrink}`);
     }
   };
 
-  const handleSubmit = () => {
-    if (!textSearch) {
-      return toast.error('Please enter a search term!');
-    }
+  const recipeFilter = async (ingredientAPI, nameAPI, firstLetterAPI) => {
+    const response = await getSearchResponse(ingredientAPI, nameAPI, firstLetterAPI);
+    applySearchResponse(response);
+  };
+
+  const handleSubbmit = () => {
     if (titleHeader === 'Meals') {
       recipeFilter(ingredientFetchMeal, nameFetchMeal, firsLetterFetchMeal);
     } else {
@@ -74,48 +88,73 @@ export default function SearchBar() {
   };
 
   return (
-    <div>
-      <label>
-        Ingredient:
-        <input
-          type="radio"
-          data-testid="ingredient-search-radio"
-          name="search-radio"
-          value="ingredient"
-          onChange={({ target }) => setInputSearch(target.value)}
-        />
-      </label>
-      <label>
-        Name:
-        <input
-          type="radio"
-          data-testid="name-search-radio"
-          name="search-radio"
-          value="name"
-          onChange={({ target }) => setInputSearch(target.value)}
-        />
-      </label>
-      <label>
-        First Letter:
-        <input
-          type="radio"
-          data-testid="first-letter-search-radio"
-          name="search-radio"
-          value="first-letter"
-          onChange={({ target }) => setInputSearch(target.value)}
-        />
-      </label>
+    <div className="searchBar-container">
+      <div className="search-inputs">
+        <label>
+          Ingredient:
+          <input
+            type="radio"
+            data-testid="ingredient-search-radio"
+            name="search-radio"
+            value="ingredient"
+            onChange={ ({ target }) => setInputSearch(target.value) }
+          />
+        </label>
+        <label>
+          Name:
+          <input
+            type="radio"
+            data-testid="name-search-radio"
+            name="search-radio"
+            value="name"
+            onChange={ ({ target }) => setInputSearch(target.value) }
+          />
+        </label>
+        <label>
+          First Letter:
+          <input
+            type="radio"
+            data-testid="first-letter-search-radio"
+            name="search-radio"
+            value="first-letter"
+            onChange={ ({ target }) => setInputSearch(target.value) }
+          />
+        </label>
+      </div>
       <button
         type="button"
         data-testid="exec-search-btn"
-        onClick={handleSubmit}
+        onClick={ handleSubbmit }
+        className=" button-submit rounded-md
+         shadow-sm"
       >
-        Search
+        Busca
       </button>
-
-      {recipesSearch.filter((_element, index) => index < maxNumber).map((element, index) => (
-        <RecipeCard key={index} element={element} index={index} type={titleHeader} />
-      ))}
+      {recipesSearch.filter((_element, index) => index < maxNumber)
+        .map((element, index) => {
+          if (titleHeader === 'Drinks') {
+            return (
+              <div data-testid={ `${index}-recipe-card` } key={ index }>
+                <img
+                  data-testid={ `${index}-card-img` }
+                  src={ element.strDrinkThumb }
+                  alt="Imagem da receita"
+                />
+                <h4 data-testid={ `${index}-card-name` }>{element.strDrink}</h4>
+              </div>
+            );
+          }
+          return (
+            <div data-testid={ `${index}-recipe-card` } key={ index }>
+              <img
+                data-testid={ `${index}-card-img` }
+                src={ element.strMealThumb }
+                alt="Imagem da receita"
+              />
+              <h4 data-testid={ `${index}-card-name` }>{element.strMeal}</h4>
+            </div>
+          );
+        })}
     </div>
   );
 }
