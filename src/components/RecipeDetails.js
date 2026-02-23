@@ -8,8 +8,6 @@ import whiteHeartIcon from '../images/whiteHeartIcon.svg';
 import styles from './RecipeDetails.module.css';
 
 function RecipeDetails() {
-  const [idDrinks, setIdDrinks] = useState([]);
-  const [idMeals, setIdMeals] = useState([]);
   const [copyRecipe, setCopyRecipe] = useState(false);
   const [favoritMealOrDrink, setFavoriteMealOrDrink] = useState([]);
   const [, setSaveFavorit] = useState([]);
@@ -17,6 +15,7 @@ function RecipeDetails() {
 
   const location = useLocation();
   const history = useHistory();
+  const isMeal = location.pathname.includes('/meals');
 
   const sanitizeRecipe = (recipe) => {
     const sanitized = { ...recipe };
@@ -30,24 +29,20 @@ function RecipeDetails() {
 
   useEffect(() => {
     const handleChange = async () => {
-      if (location.pathname.includes('/meals')) {
+      if (isMeal) {
         const dataIdMeals = await FetchIdMeals((location.pathname.match(/\d+/g))[0]);
         const meal = dataIdMeals.meals[0];
         setFavoriteMealOrDrink(meal);
-        setCurrentRecipe(meal);
-        const sanitizedMeal = sanitizeRecipe(meal);
-        setIdMeals(Object.entries(sanitizedMeal));
-      } else if (location.pathname.includes('/drinks')) {
+        setCurrentRecipe(sanitizeRecipe(meal));
+      } else {
         const dataIdDrinks = await FetchIdDrink(location.pathname.match(/\d+/g)[0]);
         const drink = dataIdDrinks.drinks[0];
         setFavoriteMealOrDrink(drink);
-        setCurrentRecipe(drink);
-        const sanitizedDrink = sanitizeRecipe(drink);
-        setIdDrinks(Object.entries(sanitizedDrink));
+        setCurrentRecipe(sanitizeRecipe(drink));
       }
     };
     handleChange();
-  }, [location.pathname]);
+  }, [location.pathname, isMeal]);
 
   const copyLink = () => {
     const local = location.pathname;
@@ -56,14 +51,15 @@ function RecipeDetails() {
   };
 
   const favoriteRecipe = () => {
+    const isMealType = location.pathname.includes('/meals');
     setSaveFavorit((prevState) => [...prevState, {
-      id: favoritMealOrDrink.idDrink,
-      type: 'drink',
-      nationality: '',
-      category: favoritMealOrDrink.strCategory,
-      alcoholicOrNot: favoritMealOrDrink.strAlcoholic,
-      name: favoritMealOrDrink.strDrink,
-      image: favoritMealOrDrink.strDrinkThumb,
+      id: isMealType ? favoritMealOrDrink.idMeal : favoritMealOrDrink.idDrink,
+      type: isMealType ? 'meal' : 'drink',
+      nationality: favoritMealOrDrink.strArea || '',
+      category: favoritMealOrDrink.strCategory || '',
+      alcoholicOrNot: favoritMealOrDrink.strAlcoholic || '',
+      name: favoritMealOrDrink.strMeal || favoritMealOrDrink.strDrink,
+      image: favoritMealOrDrink.strMealThumb || favoritMealOrDrink.strDrinkThumb,
     }]);
   };
 
@@ -86,94 +82,85 @@ function RecipeDetails() {
     return list;
   }, [currentRecipe]);
 
+  const title = currentRecipe?.strMeal || currentRecipe?.strDrink || '';
+  const image = currentRecipe?.strMealThumb || currentRecipe?.strDrinkThumb || '';
+  const category = currentRecipe?.strCategory || '';
+  const alcoholic = currentRecipe?.strAlcoholic || '';
+  const instructions = currentRecipe?.strInstructions || '';
+
   const handleRedirect = () => {
-    if (location.pathname.includes('/meals')) {
+    if (isMeal) {
       history
         .push(`/meals/${location.pathname.match(/\d+/g)[0]}/in-progress`);
-    } else { history.push(`/drinks/${location.pathname.match(/\d+/g)[0]}/in-progress`); }
+    } else {
+      history.push(`/drinks/${location.pathname.match(/\d+/g)[0]}/in-progress`);
+    }
   };
+
   return (
-    <div>
-      {idDrinks.length > 0 ? idDrinks.map(
-        (element) => {
-          switch (element[0]) {
-            case 'strDrink':
-              return <h1 data-testid="recipe-title">{element[1]}</h1>;
-            case 'strDrinkThumb':
-              return (<img
-                src={element[1]}
-                alt="Imagem da receita"
-                data-testid="recipe-photo"
-                className={styles.recipePhoto}
-              />);
-            case 'strCategory':
-              return <h3 data-testid="recipe-category">{element[1]}</h3>;
-            case 'strAlcoholic':
-              return <h3 data-testid="recipe-category">{element[1]}</h3>;
-            case 'strInstructions':
-              return <li data-testid="instructions">{element[1]}</li>;
-            default: return null;
-          }
-        },
+    <div className={ styles.page }>
+      <section className={ styles.hero }>
+        <div className={ styles.heroText }>
+          <h1 data-testid="recipe-title">{title}</h1>
+          <div className={ styles.meta }>
+            {category && <span data-testid="recipe-category">{category}</span>}
+            {alcoholic && <span>{alcoholic}</span>}
+          </div>
+          <p className={ styles.instructions } data-testid="instructions">
+            {instructions}
+          </p>
+        </div>
+        {image && (
+          <img
+            src={ image }
+            alt="Imagem da receita"
+            data-testid="recipe-photo"
+            className={ styles.recipePhoto }
+          />
+        )}
+      </section>
 
-      )
+      <section className={ styles.card }>
+        <h3>Ingredientes</h3>
+        {ingredientsList.length > 0 && (
+          <ul>
+            {ingredientsList.map((item, index) => (
+              <li
+                key={ `${item.ingredient}-${index}` }
+                data-testid={ `${index}-ingredient-name-and-measure` }
+              >
+                {item.measure ? `${item.ingredient} - ${item.measure}` : item.ingredient}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
-        : idMeals.map((element) => {
-          switch (element[0]) {
-            case 'strMeal':
-              return <h1 data-testid="recipe-title">{element[1]}</h1>;
-            case 'strMealThumb':
-              return (<img
-                src={element[1]}
-                alt="Imagem da receita"
-                data-testid="recipe-photo"
-                className={styles.recipePhoto}
-              />);
-            case 'strCategory':
-              return <h3 data-testid="recipe-category">{element[1]}</h3>;
-            case 'strInstructions':
-              return <li data-testid="instructions">{element[1]}</li>;
-            case 'strYoutube':
-              return (
-                <iframe
-                  data-testid="video"
-                  width="420"
-                  height="315"
-                  src={element[1]}
-                  title="video"
-                />
-              );
-            default: return null;
-          }
-        })}
-      {ingredientsList.length > 0 && (
-        <ul>
-          {ingredientsList.map((item, index) => (
-            <li
-              key={`${item.ingredient}-${index}`}
-              data-testid={`${index}-ingredient-name-and-measure`}
-            >
-              {item.measure ? `${item.ingredient} - ${item.measure}` : item.ingredient}
-            </li>
-          ))}
-        </ul>
-      )}
-      <button
-        data-testid="start-recipe-btn"
-        className={styles.buttonStart}
-        onClick={handleRedirect}
-      >
-
-        Start Recipe
-      </button>
+      <div className={ styles.actions }>
+        <button
+          data-testid="start-recipe-btn"
+          className={ styles.buttonStart }
+          onClick={ handleRedirect }
+        >
+          Start Recipe
+        </button>
+        <button
+          data-testid="share-btn"
+          onClick={ copyLink }
+          className={ styles.iconButton }
+        >
+          <img src={ shareIcon } alt="Botao de Compartilhar" />
+        </button>
+        <button
+          data-testid="favorite-btn"
+          onClick={ favoriteRecipe }
+          className={ styles.iconButton }
+        >
+          <img src={ whiteHeartIcon } alt="Botao de Favoritar" />
+        </button>
+      </div>
 
       {copyRecipe && <p>Link copied!</p>}
-      <button data-testid="share-btn" onClick={copyLink}>
-        <img src={shareIcon} alt="Botao de Compartilhar" />
-      </button>
-      <button data-testid="favorite-btn" onClick={favoriteRecipe}>
-        <img src={whiteHeartIcon} alt="Botao de Favoritar" />
-      </button>
     </div>
   );
 }

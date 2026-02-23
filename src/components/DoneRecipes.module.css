@@ -1,6 +1,7 @@
 .image-recipe {
   width: 100%;
-  max-width: 220px;
+  max-width: 240px;
   height: auto;
-  border-radius: 8px;
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-soft);
 }
