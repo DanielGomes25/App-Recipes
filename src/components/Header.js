@@ -10,6 +10,7 @@ function Header() {
   const { titleHeader, loadingSearch, textSearch, setTextSearch } = useContext(Context);
   const [searchInput, setSearchInput] = useState(false);
 
+  // Alterna a visibilidade do campo de busca
   const searchOnClick = () => {
     if (searchInput) {
       setSearchInput(false);

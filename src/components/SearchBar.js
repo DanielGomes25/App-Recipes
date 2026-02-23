@@ -19,6 +19,7 @@ export default function SearchBar() {
   const history = useHistory();
   const maxNumber = 12;
 
+  // Escolhe a melhor função de alerta para o ambiente atual (browser ou teste)
   const getAlertFn = () => {
     if (typeof global !== 'undefined' && global.alert) {
       return global.alert;
@@ -29,6 +30,7 @@ export default function SearchBar() {
     return () => {};
   };
 
+  // Direciona para a API correta com base na opção de rádio selecionada
   const getSearchResponse = async (ingredientAPI, nameAPI, firstLetterAPI) => {
     switch (inputSearch) {
     case 'ingredient':
@@ -46,6 +48,7 @@ export default function SearchBar() {
     }
   };
 
+  // Aplica a resposta no estado e trata os casos de 0/1 resultado
   const applySearchResponse = (response) => {
     if (!response) {
       return;
@@ -74,11 +77,13 @@ export default function SearchBar() {
     }
   };
 
+  // Orquestra o fluxo de busca (requisição -> tratamento da resposta)
   const recipeFilter = async (ingredientAPI, nameAPI, firstLetterAPI) => {
     const response = await getSearchResponse(ingredientAPI, nameAPI, firstLetterAPI);
     applySearchResponse(response);
   };
 
+  // Escolhe APIs de meals ou drinks conforme o header atual
   const handleSubbmit = () => {
     if (titleHeader === 'Meals') {
       recipeFilter(ingredientFetchMeal, nameFetchMeal, firsLetterFetchMeal);

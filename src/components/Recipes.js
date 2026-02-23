@@ -32,6 +32,7 @@ export default function Recipes() {
   const imgArrayDrinks = [ordinary, cocktail, shake, other, cocoa];
   const history = useHistory();
 
+  // Busca a lista inicial (12 itens) conforme a rota: /meals ou /drinks
   const getRecipes = useCallback(async () => {
     if (history.location.pathname === '/meals') {
       const meals = await allMeals();
@@ -46,6 +47,7 @@ export default function Recipes() {
     history.location.pathname, setRecipesData,
   ]);
 
+  // Busca as 5 primeiras categorias para os botões de filtro
   useEffect(() => {
     const fetchCategories = async () => {
       if (history.location.pathname === '/meals') {
@@ -68,6 +70,7 @@ export default function Recipes() {
     setCategory,
   ]);
 
+  // Mapeia a rota para o servidor usado no getCategories
   const serverParameter = useCallback(() => {
     if (history.location.pathname === '/meals') {
       const server = 'themealdb';
@@ -81,6 +84,7 @@ export default function Recipes() {
     history.location.pathname,
   ]);
 
+  // Busca receitas da categoria selecionada e atualiza a lista
   const fetchCategory = useCallback(async (categoryName) => {
     if (!categoryName) return;
     setSpecificCategory(categoryName);
@@ -98,6 +102,7 @@ export default function Recipes() {
     setRecipesData,
   ]);
 
+  // Rebusca quando a categoria selecionada muda
   useEffect(() => {
     if (specificCategory) {
       fetchCategory(specificCategory);
@@ -115,10 +120,10 @@ export default function Recipes() {
         <div>
           <button
             data-testid="All-category-filter"
-            onClick={ getRecipes }
+            onClick={getRecipes}
           >
             <img
-              src={ history.location.pathname === '/meals' ? All : AllDrinks }
+              src={history.location.pathname === '/meals' ? All : AllDrinks}
               alt="Filtro All"
             />
           </button>
@@ -126,15 +131,15 @@ export default function Recipes() {
         {
           category
             .map((e, index) => (
-              <div key={ e.strCategory }>
+              <div key={e.strCategory}>
                 <button
                   type="button"
-                  data-testid={ `${e.strCategory}-category-filter` }
-                  onClick={ () => fetchCategory(e.strCategory) }
+                  data-testid={`${e.strCategory}-category-filter`}
+                  onClick={() => fetchCategory(e.strCategory)}
                 >
                   <img
-                    src={ history.location.pathname === '/meals' ? imgArray[index]
-                      : imgArrayDrinks[index] }
+                    src={history.location.pathname === '/meals' ? imgArray[index]
+                      : imgArrayDrinks[index]}
                     alt="Imagens dos Botoes"
                   />
                 </button>
@@ -150,21 +155,21 @@ export default function Recipes() {
                 .map((e, index) => (
                   <div
                     className="cards-container"
-                    key={ e.idMeal }
-                    data-testid={ `${index}-recipe-card` }
+                    key={e.idMeal}
+                    data-testid={`${index}-recipe-card`}
                   >
                     <Link
-                      to={ `/meals/${e.idMeal}` }
+                      to={`/meals/${e.idMeal}`}
                     >
                       <img
                         className="image-card"
-                        data-testid={ `${index}-card-img` }
-                        src={ e.strMealThumb }
-                        alt={ e.strMeal }
+                        data-testid={`${index}-card-img`}
+                        src={e.strMealThumb}
+                        alt={e.strMeal}
                       />
                     </Link>
                     <p
-                      data-testid={ `${index}-card-name` }
+                      data-testid={`${index}-card-name`}
                     >
                       {e.strMeal}
                     </p>
@@ -179,19 +184,19 @@ export default function Recipes() {
                 .map((e, index) => (
                   <div
                     className="cards-container"
-                    key={ e.idDrink }
-                    data-testid={ `${index}-recipe-card` }
+                    key={e.idDrink}
+                    data-testid={`${index}-recipe-card`}
                   >
-                    <Link to={ `/drinks/${e.idDrink}` }>
+                    <Link to={`/drinks/${e.idDrink}`}>
                       <img
                         className="image-card"
-                        data-testid={ `${index}-card-img` }
-                        src={ e.strDrinkThumb }
-                        alt={ e.strDrink }
+                        data-testid={`${index}-card-img`}
+                        src={e.strDrinkThumb}
+                        alt={e.strDrink}
                       />
                     </Link>
                     <p
-                      data-testid={ `${index}-card-name` }
+                      data-testid={`${index}-card-name`}
                     >
                       {e.strDrink}
                     </p>

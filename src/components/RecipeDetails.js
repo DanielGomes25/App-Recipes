@@ -17,6 +17,7 @@ function RecipeDetails() {
   const history = useHistory();
   const isMeal = location.pathname.includes('/meals');
 
+  // Remove campos vazios/nulos para manter o render limpo
   const sanitizeRecipe = (recipe) => {
     const sanitized = { ...recipe };
     Object.keys(sanitized).forEach((key) => {
@@ -29,14 +30,17 @@ function RecipeDetails() {
 
   const FAVORITES_KEY = 'favoriteRecipes';
 
+  // Lê favoritos do localStorage (fallback para array vazio)
   const getStoredFavorites = useCallback(() => (
     JSON.parse(localStorage.getItem(FAVORITES_KEY)) || []
   ), []);
 
+  // Verifica se o id da receita já está favoritado
   const isRecipeFavorited = useCallback((recipeId) => (
     getStoredFavorites().some((item) => item.id === recipeId)
   ), [getStoredFavorites]);
 
+  // Busca detalhes da receita por ID conforme a rota (/meals ou /drinks)
   useEffect(() => {
     const handleChange = async () => {
       if (isMeal) {
@@ -52,6 +56,7 @@ function RecipeDetails() {
     handleChange();
   }, [location.pathname, isMeal]);
 
+  // Sincroniza o estado do coração com o localStorage
   useEffect(() => {
     if (!currentRecipe) {
       setIsFavorite(false);
@@ -61,12 +66,14 @@ function RecipeDetails() {
     setIsFavorite(isRecipeFavorited(recipeId));
   }, [currentRecipe, isMeal, isRecipeFavorited]);
 
+  // Copia a URL da receita atual
   const copyLink = () => {
     const local = location.pathname;
     copy(`http://localhost:3000${local}`);
     setCopyRecipe(true);
   };
 
+  // Adiciona/remove dos favoritos e atualiza a UI
   const favoriteRecipe = () => {
     if (!currentRecipe) {
       return;
@@ -91,6 +98,7 @@ function RecipeDetails() {
     setIsFavorite(!exists);
   };
 
+  // Monta uma lista normalizada de ingrediente + medida
   const ingredientsList = useMemo(() => {
     if (!currentRecipe) {
       return [];
