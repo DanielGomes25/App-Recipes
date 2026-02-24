@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Context from '../context/Context';
 
+// Página de perfil com atalhos para receitas feitas, favoritas e logout.
 function Profile() {
   const { setTitleHeader, setLoadingSearch } = useContext(Context);
 
@@ -12,6 +13,7 @@ function Profile() {
     setLoadingSearch(false);
   }, [setTitleHeader, setLoadingSearch]);
 
+  // Recupera email do usuário salvo localmente.
   const getEmail = () => {
     const savedEmail = JSON.parse(localStorage.getItem('user'));
     const storedEmail = savedEmail ? savedEmail.email : '';
@@ -20,14 +22,17 @@ function Profile() {
 
   const history = useHistory();
 
+  // Abre a lista de receitas concluídas.
   const doneRecipesRoute = () => {
     history.push('/done-recipes');
   };
 
+  // Abre a lista de receitas favoritas.
   const favoriteRecipesRoute = () => {
     history.push('/favorite-recipes');
   };
 
+  // Limpa sessão local e retorna para a tela de login.
   const logoutRoute = () => {
     localStorage.clear();
     history.push('/');

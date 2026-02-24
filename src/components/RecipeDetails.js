@@ -8,6 +8,7 @@ import whiteHeartIcon from '../images/whiteHeartIcon.svg';
 import blackHeartIcon from '../images/blackHeartIcon.svg';
 import styles from './RecipeDetails.module.css';
 
+// Exibe detalhes completos da receita e ações de compartilhar/favoritar/iniciar.
 function RecipeDetails() {
   const [copyRecipe, setCopyRecipe] = useState(false);
   const [currentRecipe, setCurrentRecipe] = useState(null);
@@ -42,6 +43,7 @@ function RecipeDetails() {
 
   // Busca detalhes da receita por ID conforme a rota (/meals ou /drinks)
   useEffect(() => {
+    // Realiza a chamada da API e salva os dados já sanitizados.
     const handleChange = async () => {
       if (isMeal) {
         const dataIdMeals = await FetchIdMeals((location.pathname.match(/\d+/g))[0]);
@@ -124,6 +126,7 @@ function RecipeDetails() {
   const alcoholic = currentRecipe?.strAlcoholic || '';
   const instructions = currentRecipe?.strInstructions || '';
 
+  // Envia usuário para o fluxo de preparo da receita atual.
   const handleRedirect = () => {
     if (isMeal) {
       history

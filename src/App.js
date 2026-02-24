@@ -13,6 +13,7 @@ import DrinksDetails from './pages/DrinksDetails';
 // import MealsProgress from './pages/MealsProgress';
 import RecipeInProgress from './components/RecipeInProgress';
 
+// Define todas as rotas principais da aplicação.
 function App() {
   return (
     <Switch>

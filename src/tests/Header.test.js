@@ -6,6 +6,7 @@ import Provider from '../context/Provider';
 import renderWithRouter from '../services/renderWithRouter';
 import Header from '../components/Header';
 
+// Valida renderização do Header e o toggle do campo de busca.
 test('Farewell, front-end', () => {
   // Este arquivo pode ser modificado ou deletado sem problemas
   renderWithRouter(

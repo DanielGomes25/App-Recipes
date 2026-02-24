@@ -3,13 +3,16 @@ import { useHistory } from 'react-router-dom';
 import drinkIcon from '../images/drinkIcon.svg';
 import mealIcon from '../images/mealIcon.svg';
 
+// Barra inferior com atalhos de navegação para Meals e Drinks.
 export default function Footer() {
   const history = useHistory();
 
+  // Redireciona para a listagem de bebidas.
   const redirectToDrinks = () => {
     history.push('/drinks');
   };
 
+  // Redireciona para a listagem de comidas.
   const redirectToMeals = () => {
     history.push('/meals');
   };

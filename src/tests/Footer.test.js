@@ -5,7 +5,9 @@ import renderWithRouter from '../services/renderWithRouter';
 import Provider from '../context/Provider';
 import Footer from '../components/Footer';
 
+// Suíte de navegação pelos botões do Footer.
 describe('Teste o componente Footer;', () => {
+  // Garante que o botão de drinks está visível e redireciona corretamente.
   test('Verifica se o botão de Drink esta sendo renderizado na tela e se, ao clicar, ele redireciona para a página de Drinks;', () => {
     const { history } = renderWithRouter(
       <Provider>
@@ -20,6 +22,8 @@ describe('Teste o componente Footer;', () => {
 
     expect(history.location.pathname).toBe('/drinks');
   });
+
+  // Garante que o botão de meals está visível e redireciona corretamente.
   test('Verifica se o botão de Meals esta sendo renderizado na tela e se, ao clicar, ele redireciona para a página de Meals;', () => {
     const { history } = renderWithRouter(
       <Provider>

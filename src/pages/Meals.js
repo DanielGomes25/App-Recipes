@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 import Context from '../context/Context';
 import Recipes from '../components/Recipes';
 
+// Página de listagem de comidas com header, cards e footer.
 function Meals() {
   const { setTitleHeader, setLoadingSearch } = useContext(Context);
 

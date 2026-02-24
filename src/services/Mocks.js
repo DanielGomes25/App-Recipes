@@ -36,6 +36,7 @@ export const mockFavRecipe = [
   },
 ];
 
+// Simula o fluxo de compartilhamento usado nos testes de favoritas.
 export const handleShareBtn = (element) => {
   navigator.clipboard.writeText(`http://localhost:3000${element}`);
   setAlert(true);

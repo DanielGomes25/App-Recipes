@@ -9,6 +9,7 @@ import {
   nameFetchDrink, firsLetterFetchDrink,
 } from '../services/APIsFetch';
 
+// Componente de busca com múltiplos filtros e redirecionamento por resultado.
 export default function SearchBar() {
   const {
     textSearch,

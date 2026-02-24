@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 import Context from '../context/Context';
 import Recipes from '../components/Recipes';
 
+// Página de listagem de bebidas com header, cards e footer.
 function Drinks() {
   const { setTitleHeader, setLoadingSearch } = useContext(Context);
 

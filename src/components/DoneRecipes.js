@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom';
 import shareIcon from '../images/shareIcon.svg';
 import styles from './DoneRecipes.module.css';
 
+// Renderiza a lista de receitas concluídas com filtros e compartilhamento.
 function DoneRecipes() {
   const [recipesDone, setRecipesDone] = useState([]);
   const [renderRecipes, setRenderRecipes] = useState([]);
   const [copied, setCopied] = useState(false);
 
+  // Filtra a lista exibida por tipo de receita.
   const filterRecipes = (type) => {
     const newArray = recipesDone.filter((element) => element.type === type);
     setRenderRecipes(newArray);
@@ -20,6 +22,7 @@ function DoneRecipes() {
     setRenderRecipes(recipes);
   }, [setRecipesDone]);
 
+  // Copia a URL da receita selecionada para a área de transferência.
   const copyLink = (link) => {
     navigator.clipboard.writeText(link);
     setCopied(true);

@@ -22,6 +22,7 @@ import {
 } from '../services/APIsFetch';
 import Context from '../context/Context';
 
+// Renderiza a grade de receitas e os filtros por categoria.
 export default function Recipes() {
   const [category, setCategory] = useState([]);
   const [specificCategory, setSpecificCategory] = useState('');
@@ -49,6 +50,7 @@ export default function Recipes() {
 
   // Busca as 5 primeiras categorias para os botões de filtro
   useEffect(() => {
+    // Carrega categorias conforme o tipo da rota atual.
     const fetchCategories = async () => {
       if (history.location.pathname === '/meals') {
         const categories = await mealCategoryFetch();

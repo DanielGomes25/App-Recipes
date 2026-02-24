@@ -6,6 +6,7 @@ import Context from '../context/Context';
 import SearchBar from './SearchBar';
 import styles from './Header.module.css';
 
+// Cabeçalho padrão com título, acesso ao perfil e controle de busca.
 function Header() {
   const { titleHeader, loadingSearch, textSearch, setTextSearch } = useContext(Context);
   const [searchInput, setSearchInput] = useState(false);

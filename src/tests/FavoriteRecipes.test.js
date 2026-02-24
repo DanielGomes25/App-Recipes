@@ -12,10 +12,14 @@ import FavoriteRecipes from '../pages/FavoriteRecipes';
 const cardImage = '0-horizontal-image';
 const shareBtn = '0-horizontal-share-btn';
 const favBtn = '0-horizontal-favorite-btn';
+
+// Suíte da tela de receitas favoritas.
 describe('Testa componente Favorites Recipes', () => {
   beforeEach(() => {
     localStorage.clear(); // Limpa o localStorage antes de cada teste
   });
+
+  // Verifica se os botões de filtro principais são renderizados.
   it('testa se renderiza inputs no componente Favorites Recipes', async () => {
     renderWithRouter(
       <Provider>
@@ -36,6 +40,8 @@ describe('Testa componente Favorites Recipes', () => {
     expect(filterBtnMeal).toBeInTheDocument();
     expect(filterBtnDrink).toBeInTheDocument();
   });
+
+  // Verifica se cards de meal e drink favoritos aparecem na tela.
   it('testa se renderiza cards de receitas favoritas', async () => {
     renderWithRouter(
       <Provider>
@@ -66,6 +72,8 @@ describe('Testa componente Favorites Recipes', () => {
     expect(shareBtnDrink).toBeInTheDocument();
     expect(favBtnDrink).toBeInTheDocument();
   });
+
+  // Valida o comportamento dos filtros All, Meals e Drinks.
   it('testa se função filter funciona', async () => {
     renderWithRouter(
       <Provider>
@@ -131,6 +139,7 @@ describe('Testa componente Favorites Recipes', () => {
     waitFor(() => expect(favBtnDrink).toBeInTheDocument());
   });
 
+  // Garante navegação para a rota de detalhes ao clicar na imagem.
   it('Testando se direciona para a página de receita detalhada', async () => {
     const history = createMemoryHistory();
     renderWithRouter(
@@ -149,6 +158,7 @@ describe('Testa componente Favorites Recipes', () => {
     expect(history.location.pathname).toBe('/meals/52771');
   });
 
+  // Garante feedback visual após compartilhar uma receita favorita.
   it('Testa se botão de compartilhar funciona', async () => {
     const mockWriteText = jest.fn();
     Object.defineProperty(navigator, 'clipboard', {
@@ -172,6 +182,7 @@ describe('Testa componente Favorites Recipes', () => {
     expect(linkCopied).toBeInTheDocument();
   });
 
+  // Valida remoção da receita ao clicar no botão de favoritar.
   it('Testa se botão de favoritar funciona', async () => {
     renderWithRouter(
       <Provider>

@@ -8,6 +8,7 @@ import styles from './RecipeInProgress.module.css';
 
 const FAVORITES_KEY = 'favoriteRecipes';
 const MAX_INGREDIENTS = 20;
+// Tela de preparo com checklist de ingredientes e finalização da receita.
 function RecipeInProgress(props) {
   const [currentRecipe, setCurrentRecipe] = useState(null);
   const [concludedIngredients, setConcludedIngredients] = useState([]);
@@ -18,7 +19,6 @@ function RecipeInProgress(props) {
   const [allIngredientsCompleted, setAllIngredientsCompleted] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const history = useHistory();
-
   const { match: { params: { id } }, currentPage } = props;
   const isMeal = currentPage === 'meals';
   const ingredientesIndex = useMemo(() => Array.from(
@@ -35,7 +35,6 @@ function RecipeInProgress(props) {
       0,
     );
   }, [currentRecipe, ingredientesIndex]);
-
   const savedIngredients = useMemo(() => {
     const storedByType = isMeal ? meal : drink;
     if (storedByType && storedByType[id]) {
@@ -43,7 +42,6 @@ function RecipeInProgress(props) {
     }
     return [];
   }, [isMeal, meal, drink, id]);
-
   useEffect(() => {
     setConcludedIngredients(savedIngredients);
     setAllIngredientsCompleted(savedIngredients.length === ingredientCount);
@@ -71,7 +69,7 @@ function RecipeInProgress(props) {
     const stored = JSON.parse(localStorage.getItem(FAVORITES_KEY)) || [];
     setIsFavorite(stored.some((item) => item.id === recipeId));
   }, [currentRecipe, isMeal]);
-
+  // Marca/desmarca ingrediente e persiste progresso por receita.
   const handleChangeCheckbox = (ingredients) => {
     const modifiedIngredients = concludedIngredients.includes(ingredients)
       ? concludedIngredients.filter(
@@ -91,7 +89,7 @@ function RecipeInProgress(props) {
       [id]: [...modifiedIngredients],
     });
   };
-
+  // Gera a lista de ingredientes com checkbox para o preparo.
   const renderIngredients = () => (
     ingredientesIndex.map((ingredient, index) => {
       const currentIngredientName = currentRecipe[ingredient];
@@ -115,7 +113,7 @@ function RecipeInProgress(props) {
       );
     })
   );
-
+  // Copia URL base da receita removendo o sufixo "/in-progress".
   const handleCopyLink = () => {
     const completeURL = window.location.href;
     const lastPosition = completeURL.lastIndexOf('/');
@@ -123,7 +121,7 @@ function RecipeInProgress(props) {
     navigator.clipboard.writeText(slicedURL);
     setErrorNotification('Link copied!');
   };
-
+  // Cria o registro de receita concluída e navega para a tela de concluídas.
   const concludeRecipe = () => {
     const currentDate = new Date();
     setDoneRecipes([...doneRecipes, {
@@ -139,7 +137,7 @@ function RecipeInProgress(props) {
     }]);
     history.push('/done-recipes');
   };
-
+  // Alterna estado de favorito no localStorage e no estado local.
   const favoriteRecipe = () => {
     const recipeId = isMeal ? currentRecipe.idMeal : currentRecipe.idDrink;
     const favoriteEntry = {
@@ -159,7 +157,6 @@ function RecipeInProgress(props) {
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(updatedFavorites));
     setIsFavorite(!exists);
   };
-
   if (!currentRecipe) {
     return <div className="meals" />;
   }

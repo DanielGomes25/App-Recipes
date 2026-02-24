@@ -6,6 +6,7 @@ import shareIcon from '../images/shareIcon.svg';
 import blackHeartIcon from '../images/blackHeartIcon.svg';
 import styles from '../styles/FavoritesRecipes.module.css';
 
+// Página de receitas favoritas com filtros, compartilhamento e remoção.
 function FavoriteRecipes() {
   const { setTitleHeader, setLoadingSearch } = useContext(Context);
   const [alert, setAlert] = useState(false);
@@ -38,6 +39,7 @@ function FavoriteRecipes() {
     localStorage.setItem('favoriteRecipes', JSON.stringify(mockRecipes));
   }, []);
 
+  // Carrega favoritos do localStorage e sincroniza estados da página.
   const getFavoriteRecipes = useCallback(() => {
     const favoriteRecipesStorage = JSON.parse(localStorage.getItem('favoriteRecipes'));
     if (favoriteRecipesStorage) {
@@ -56,6 +58,7 @@ function FavoriteRecipes() {
     getFavoriteRecipes();
   }, [setTitleHeader, setLoadingSearch, setFavoriteRecipes, getFavoriteRecipes]);
 
+  // Aplica filtro da lista por tipo de receita.
   const handleFilter = (filter) => {
     if (filter === 'All') {
       setFavoriteRecipes(recipeFilter);
@@ -66,12 +69,14 @@ function FavoriteRecipes() {
     }
   };
 
+  // Remove receita da lista exibida e persiste no localStorage.
   const handleRemoveFavorite = (index) => {
     const spliceFavorite = [...favoriteRecipes].toSpliced(index, 1);
     setFavoriteRecipes(spliceFavorite);
     localStorage.setItem('favoriteRecipes', JSON.stringify(spliceFavorite));
   };
 
+  // Copia link da receita e exibe feedback visual ao usuário.
   const handleShareBtn = (element) => {
     navigator.clipboard.writeText(`http://localhost:3000${element}`);
     setAlert(true);

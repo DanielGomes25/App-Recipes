@@ -12,6 +12,7 @@ export default function useLocalStorage(key, initialData) {
     () => getInitialStoredValue(key, initialData),
   );
 
+  // Atualiza estado React e localStorage em uma única chamada.
   const setStorageValue = (data) => {
     setStoredData(data);
     localStorage.setItem(key, JSON.stringify(data));

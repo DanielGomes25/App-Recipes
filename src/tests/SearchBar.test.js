@@ -8,6 +8,7 @@ import SearchBar from '../components/SearchBar';
 import App from '../App';
 import { mockMeals } from '../services/Mocks';
 
+// Suíte da barra de busca e seus fluxos de filtragem.
 describe('Testes do "SearchBar"', () => {
   beforeEach(() => {
     jest.spyOn(global, 'fetch').mockResolvedValue({
@@ -15,6 +16,7 @@ describe('Testes do "SearchBar"', () => {
     });
   });
 
+  // Verifica renderização dos rádios e botão de execução da busca.
   it('Testa se renderiza inputs no componente SearchBar', async () => {
     renderWithRouter(
       <Provider>
@@ -33,6 +35,8 @@ describe('Testes do "SearchBar"', () => {
     expect(firstLetterInput).toBeInTheDocument();
     expect(searchButton).toBeInTheDocument();
   });
+
+  // Garante que os três tipos de busca disparam chamadas de API.
   it('testa se input chama a função no componente drink', () => {
     const { history } = renderWithRouter(
       <Provider>
@@ -67,6 +71,7 @@ describe('Testes do "SearchBar"', () => {
     expect(global.fetch).toHaveBeenCalled();
   });
 
+  // Exercita o cenário de validação para first-letter com mais de 1 caractere.
   it('Testando alerts para mais de um caracter no "First Letter"', () => {
     const { history } = renderWithRouter(
       <Provider>
@@ -103,6 +108,7 @@ describe('Testes do "SearchBar"', () => {
     });
   });
 
+  // Exercita cenário de receita não encontrada.
   it('Testando alerts para receita nao encontrada', () => {
     const { history } = renderWithRouter(
       <Provider>
@@ -139,6 +145,7 @@ describe('Testes do "SearchBar"', () => {
     });
   });
 
+  // Exercita cenário com único resultado e redirecionamento automático.
   it('Testando redirecionamento quando encontrar apenas uma receita', () => {
     const { history } = renderWithRouter(
       <Provider>
@@ -175,6 +182,7 @@ describe('Testes do "SearchBar"', () => {
     });
   });
 
+  // Exercita novamente fluxo de erro para garantir robustez da busca.
   it('Testando se dispara um alert quando a receita nao é encontrada', () => {
     const { history } = renderWithRouter(
       <Provider>

@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
+// Tela inicial que valida credenciais e inicia a sessão no app.
 function Login() {
   const [userInfo, setUserInfo] = useState({ email: '', password: '' });
   const [disableButton, setDisableButton] = useState(false);
 
+  // Valida formato simples de email e tamanho mínimo da senha.
   const validateForm = () => {
     const emailValidate = userInfo.email.includes('.com');
     // const regexEmail = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,}$/i;
@@ -18,16 +20,20 @@ function Login() {
     }
   };
 
+  // Atualiza estado do formulário e revalida os campos.
   const handleChange = ({ target }) => {
     const { name, value } = target;
     setUserInfo((preveState) => ({ ...preveState, [name]: value }));
     validateForm();
   };
   const history = useHistory();
+
+  // Navega para a página principal de refeições após login.
   const mealsRoute = () => {
     history.push('/meals');
   };
 
+  // Salva email no localStorage e finaliza o fluxo de login.
   const saveInStorage = () => {
     const user = userInfo.email;
     localStorage

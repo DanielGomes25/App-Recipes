@@ -5,7 +5,9 @@ import renderWithRouter from '../services/renderWithRouter';
 import Provider from '../context/Provider';
 import RecipeDetails from '../components/RecipeDetails';
 
+// Suíte da tela de detalhes da receita.
 describe('Testa a tela de detalhes de uma receita:', () => {
+  // Verifica rota de detalhes e elementos essenciais da tela.
   test('Verifica se a tela é renderizada corretamente', async () => {
     const { history } = renderWithRouter(
       <Provider>

@@ -125,6 +125,7 @@ const Spice = {
     },
   ],
 };
+// Valida renderização inicial do progresso de drinks e interação básica.
 it('Testa a renderização do Recipe in Progress da pagiga drinks', async () => {
   jest.spyOn(global, 'fetch').mockResolvedValue({
     json: jest.fn().mockResolvedValue(Aquamarine),
@@ -151,6 +152,7 @@ it('Testa a renderização do Recipe in Progress da pagiga drinks', async () => 
   userEvent.click(ingredientCheckbox);
 });
 
+// Marca ingredientes de drink e finaliza o preparo.
 it('Testa drink e checkbox', async () => {
   jest.spyOn(global, 'fetch').mockResolvedValue({
     json: jest.fn().mockResolvedValue(Aquamarine),
@@ -181,6 +183,7 @@ it('Testa drink e checkbox', async () => {
   userEvent.click(finishButton);
 });
 
+// Verifica fluxo completo de meal: compartilhar, marcar ingredientes e concluir.
 it('Testa a renderização do Recipe in Progress da pagiga meals', async () => {
   jest.spyOn(global, 'fetch').mockResolvedValue({
     json: jest.fn().mockResolvedValue(Spice),

@@ -23,6 +23,7 @@ const isLocalhost = Boolean(
     ),
 );
 
+// Trata atualização de versão do service worker e dispara callbacks.
 function handleServiceWorkerUpdate(registration, config) {
   const installingWorker = registration.installing;
   if (!installingWorker) {
@@ -54,6 +55,7 @@ function handleServiceWorkerUpdate(registration, config) {
   };
 }
 
+// Registra o service worker válido em produção.
 function registerValidSW(swUrl, config) {
   navigator.serviceWorker
     .register(swUrl)
@@ -67,6 +69,7 @@ function registerValidSW(swUrl, config) {
     });
 }
 
+// Valida se a resposta recebida representa um SW inválido.
 function isInvalidServiceWorker(response) {
   const contentType = response.headers.get('content-type');
   return (
@@ -75,6 +78,7 @@ function isInvalidServiceWorker(response) {
   );
 }
 
+// Remove SW atual e força reload quando houver inconsistência.
 function unregisterAndReload() {
   navigator.serviceWorker.ready.then((registration) => {
     registration.unregister().then(() => {
@@ -83,6 +87,7 @@ function unregisterAndReload() {
   });
 }
 
+// Checa se o SW existe antes de registrar no ambiente local.
 function checkValidServiceWorker(swUrl, config) {
   // Check if the service worker can be found. If it can't reload the page.
   fetch(swUrl, {
@@ -105,6 +110,7 @@ function checkValidServiceWorker(swUrl, config) {
     });
 }
 
+// Registra o service worker em produção para cache/offline.
 export function register(config) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
@@ -139,6 +145,7 @@ export function register(config) {
   }
 }
 
+// Desregistra o service worker ativo.
 export function unregister() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.ready.then((registration) => {

@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import Context from './Context';
 
+// Centraliza o estado global compartilhado entre páginas e componentes.
 function Provider({ children }) {
   const [titleHeader, setTitleHeader] = useState('Title');
   const [loadingSearch, setLoadingSearch] = useState(true);

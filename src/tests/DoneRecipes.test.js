@@ -15,11 +15,13 @@ Object.assign(navigator, {
   },
 });
 
+// Suíte da tela de receitas concluídas.
 describe('Testes no componente "Done"', () => {
   beforeEach(() => {
     localStorage.setItem('doneRecipes', JSON.stringify(doneRecipes));
   });
 
+  // Valida renderização dos cards e funcionamento dos filtros.
   it('Testes se tudo é renderizado', () => {
     renderWithRouter(
       <Provider>
@@ -77,6 +79,7 @@ describe('Testes no componente "Done"', () => {
     });
   });
 
+  // Garante que o botão de compartilhar dispara a ação de cópia.
   it('Testa se é possivel copiar o link', () => {
     renderWithRouter(
       <Provider>

@@ -3,6 +3,7 @@ import Header from '../components/Header';
 import Context from '../context/Context';
 import DoneRecipes from '../components/DoneRecipes';
 
+// Página que configura o header e renderiza as receitas já finalizadas.
 function Done() {
   const { setTitleHeader, setLoadingSearch } = useContext(Context);
 
